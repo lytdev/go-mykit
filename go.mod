@@ -1,4 +1,4 @@
-module gme
+module github.com/lytdev/gme
 
 go 1.18
 
