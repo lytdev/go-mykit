@@ -10,11 +10,12 @@ package core
 
 import (
 	"fmt"
-	"gme/utils/gconv"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/lytdev/gme/utils/gconv"
 )
 
 const (

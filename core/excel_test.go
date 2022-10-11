@@ -10,9 +10,10 @@ package core
 
 import (
 	"fmt"
-	"gme/utils/mapstructure"
 	"os"
 	"testing"
+
+	"github.com/lytdev/gme/utils/mapstructure"
 
 	"github.com/xuri/excelize/v2"
 )
