@@ -2,11 +2,11 @@
  * @Author       : 刘元涛 snoopy_718@mails.ccnu.edu.cn
  * @Date         : 2022-10-11 17:47:08
  * @LastEditors  : 刘元涛 snoopy_718@mails.ccnu.edu.cn
- * @FilePath     : \go-myexcel\core\excel.go
+ * @FilePath     : \go-myexcel\gme\excel.go
  * @Description  :
  * Copyright (c) 2022 by 刘元涛 snoopy_718@mails.ccnu.edu.cn, All Rights Reserved.
  */
-package core
+package gme
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lytdev/gme/utils/gconv"
+	"github.com/lytdev/go-myexcel/utils/gconv"
 )
 
 const (
