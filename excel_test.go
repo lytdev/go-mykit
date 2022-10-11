@@ -2,7 +2,7 @@
  * @Author       : 刘元涛 snoopy_718@mails.ccnu.edu.cn
  * @Date         : 2022-10-11 17:53:49
  * @LastEditors  : 刘元涛 snoopy_718@mails.ccnu.edu.cn
- * @FilePath     : \go-myexcel\gme\excel_test.go
+ * @FilePath     : \go-myexcel\excel_test.go
  * @Description  :
  * Copyright (c) 2022 by 刘元涛 snoopy_718@mails.ccnu.edu.cn, All Rights Reserved.
  */
@@ -13,7 +13,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/lytdev/go-myexcel/utils/mapstructure"
+	"github.com/lytdev/go-myexcel/mapstructure"
 
 	"github.com/xuri/excelize/v2"
 )
