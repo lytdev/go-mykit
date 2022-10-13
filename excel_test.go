@@ -19,18 +19,18 @@ import (
 )
 
 type ExcelTest struct {
-	Isbn      string  `json:"isbn" meg:"title:ISBN;index:0"`
-	BookName  string  `json:"book_name" mapstructure:"book_name" meg:"title:书名;index:1"`
-	Author    string  `json:"author" meg:"title:作者;index:2"`
-	PubDate   string  `json:"pub_date" mapstructure:"pub_date" meg:"title:出版日期;index:3"`
-	Price     float32 `json:"price" meg:"title:定价;index:4"`
-	SuitObj   string  `json:"suit_obj" mapstructure:"suit_obj" meg:"title:适用对象;index:5"`
-	MajorType string  `json:"major_type" mapstructure:"major_type" meg:"title:图书类目;index:6"`
-	SubMajor  string  `json:"sub_major" mapstructure:"sub_major" meg:"title:细分类目;index:7"`
+	Isbn      string  `gme:"title:ISBN;index:0"`
+	BookName  string  `gme:"title:书名;index:1"`
+	Author    string  `gme:"title:作者;index:2"`
+	PubDate   string  `gme:"title:出版日期;index:3"`
+	Price     float32 `gme:"title:定价;index:4"`
+	SuitObj   string  `gme:"title:适用对象;index:5"`
+	MajorType string  `gme:"title:图书类目;index:6"`
+	SubMajor  string  `gme:"title:细分类目;index:7"`
 }
 
-func Test_Read(t *testing.T) {
-	filePath := "D:\\2022-2云展\\调整标题后\\人邮社本科教材.xlsx"
+func TestRead(t *testing.T) {
+	filePath := "D:\\测试数据\\图书测试列表.xlsx"
 	xlsx, err := excelize.OpenFile(filePath)
 	if err != nil {
 		t.Error("文件读取异常:", err)
