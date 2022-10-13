@@ -53,7 +53,7 @@ import (
  "fmt"
  "os"
  "testing"
-
+ gme "github.com/lytdev/go-myexcel"
  "github.com/lytdev/go-myexcel/mapstructure"
 
  "github.com/xuri/excelize/v2"
@@ -86,7 +86,7 @@ func main() {
   os.Exit(1)
  }
  var resultData []ExcelTest
- err = NewExcelStructDefault().SetPointerStruct(&ExcelTest{}).RowsAllProcess(rows, func(maps map[string]interface{}) error {
+ err = gme.NewExcelStructDefault().SetPointerStruct(&ExcelTest{}).RowsAllProcess(rows, func(maps map[string]interface{}) error {
   var ptr ExcelTest
   // map 转 结构体
   if mapErr := mapstructure.Decode(maps, &ptr); mapErr != nil {
