@@ -30,7 +30,7 @@ type ExcelTest struct {
 }
 
 func TestRead(t *testing.T) {
-	filePath := "D:\\测试数据\\图书测试列表.xlsx"
+	filePath := "doc/图书列表.xlsx"
 	xlsx, err := excelize.OpenFile(filePath)
 	if err != nil {
 		t.Error("文件读取异常:", err)
