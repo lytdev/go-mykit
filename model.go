@@ -20,8 +20,12 @@ import (
 )
 
 const (
-	DATE_PATTERN      = "2006-01-02"
-	DATE_TIME_PATTERN = "2006-01-02 15:04:05"
+	DATE_PATTERN         = "2006-01-02"
+	DATE_TIME_PATTERN    = "2006-01-02 15:04:05"
+	TAG_CUSTOM_KEY       = "gme"
+	TAG_MAP_KEY          = "json"
+	TAG_CUSTOM_TITLE_KEY = "title"
+	TAG_CUSTOM_INDEX_KEY = "index"
 )
 
 /**
@@ -43,7 +47,8 @@ type ExcelFields struct {
 }
 
 /**
- * @Description : 综合
+ * @Description : 封装对象
+ * @Description : init struct
  * @return       {*}
  * @Date        : 2022-10-11 19:00:50
  */
@@ -62,17 +67,28 @@ type ExcelStruct struct {
 	ConvertTypeErr bool //类型转换时候,产生错误时是否直接提示报错
 }
 
+/**
+ * @Description :定义回调函数
+ * @param        {map[string]interface{}} maps
+ * @return       {*}
+ * @Date        : 2022-10-13 17:20:25
+ */
 type Callback func(maps map[string]interface{}) error
 
-//Struct pointer
-// 结构体 指针
+/**
+ * @Description : set Struct pointer
+ * @Description : 设置转换的结构体
+ * @param        {interface{}} ptr
+ * @return       {*}
+ * @Date        : 2022-10-13 17:17:10
+ */
 func (c *ExcelStruct) SetPointerStruct(ptr interface{}) *ExcelStruct {
 	//Gets the type of the input parameter
 	// 获取入参的类型
 	t := reflect.TypeOf(ptr)
 	if t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
 		//Argument should be a struct pointer
-		c.Err = fmt.Errorf("参数应该为结构体指针")
+		c.Err = fmt.Errorf("the argument should be a pointer to the structure")
 		return c
 	}
 	//Take the structure variable that the pointer points to
@@ -89,20 +105,20 @@ func (c *ExcelStruct) SetPointerStruct(ptr interface{}) *ExcelStruct {
 		tag := fieldInfo.Tag
 		//Parsing
 		// 解析
-		fields.Field = tag.Get("json")
+		fields.Field = tag.Get(TAG_CUSTOM_KEY)
 		if fields.Field == "" {
 			fields.Field = fieldInfo.Name
 		}
-		tagStr := tag.Get("meg")
+		tagStr := tag.Get(TAG_CUSTOM_KEY)
 		index := 0
 		if tagStr == "" {
 			fields.Name = fieldInfo.Name
 		} else {
 			tagMap := gconv.TagConvMap(tagStr)
-			if title, ok := tagMap["title"]; ok {
+			if title, ok := tagMap[TAG_CUSTOM_TITLE_KEY]; ok {
 				fields.Name = title
 			}
-			if indexStr, ok := tagMap["index"]; ok {
+			if indexStr, ok := tagMap[TAG_CUSTOM_INDEX_KEY]; ok {
 				index, _ = strconv.Atoi(indexStr)
 			}
 		}
@@ -115,9 +131,9 @@ func (c *ExcelStruct) SetPointerStruct(ptr interface{}) *ExcelStruct {
 		fields.Index = index
 		fields.FieldType = fieldInfo.Type.String()
 		m := make(map[string]string)
-		m["json"] = fields.Field
-		m["title"] = fields.Name
-		m["index"] = strconv.Itoa(i)
+		m[TAG_MAP_KEY] = fields.Field
+		m[TAG_CUSTOM_TITLE_KEY] = fields.Name
+		m[TAG_CUSTOM_INDEX_KEY] = strconv.Itoa(i)
 		fields.Tags = m
 		//
 		if c.Fields == nil {
@@ -132,15 +148,20 @@ func (c *ExcelStruct) SetPointerStruct(ptr interface{}) *ExcelStruct {
 	return c
 }
 
-//process
-//处理
+/**
+ * @Description : 处理函数
+ * @param        {[][]string} rows
+ * @param        {Callback} callback
+ * @return       {*}
+ * @Date        : 2022-10-13 17:20:40
+ */
 func (c *ExcelStruct) RowsProcess(rows [][]string, callback Callback) error {
 	return c.RowsAllProcess(rows, callback)
 }
 
 /**
+ * @Description : process sheet rows
  * @Description : 处理sheet的rows
- *  process
  * @param        {[][]string} rows
  * @param        {Callback} callback
  * @return       {*}
@@ -175,8 +196,8 @@ func (c *ExcelStruct) RowsAllProcess(rows [][]string, callback Callback) error {
 }
 
 /**
+* @Description : Process a row of data and convert the row data into a map according to index
 * @Description : 处理一行的数据,将行数据根据index转换成map
-* Process a row of data and convert the row data into a map according to index
 * @param        {[]string} row
 * @return       {*}
 * @Date        : 2022-10-13 16:55:02
@@ -194,6 +215,7 @@ func (c *ExcelStruct) Row(row []string) (map[string]interface{}, error) {
 }
 
 /**
+ * @Description :the core logic of row to map is to deal with some special formats
  * @Description :行转map的核心逻辑,主要是处理一些特殊的格式(日期、数字、时间)
  * @param        {[]string} row
  * @return       {*}
