@@ -395,4 +395,5 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 			}
 		}
 	}
+	return maps, nil
 }
