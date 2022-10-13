@@ -27,7 +27,7 @@ Excel 对应的结构体参考：
 
 ```golang
 type ExcelBook struct {
-  Isbn      string  `gme:"title:ISBN;index:0"`
+ Isbn      string  `gme:"title:ISBN;index:0"`
  BookName  string  `gme:"title:书名;index:1"`
  Author    string  `gme:"title:作者;index:2"`
  PubDate   string  `gme:"title:出版日期;index:3"`
