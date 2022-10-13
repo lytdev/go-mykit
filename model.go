@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/lytdev/go-myexcel/gconv"
+	"github.com/lytdev/go-myexcel/gformt"
 )
 
 const (
@@ -167,24 +168,29 @@ func (c *ExcelStruct) RowsAllProcess(rows [][]string, callback Callback) error {
 	return nil
 }
 
-//process row
-//处理 单行
+/**
+* @Description : 处理一行的数据,将行数据根据index转换成map
+* Process a row of data and convert the row data into a map according to index
+* @param        {[]string} row
+* @return       {*}
+* @Date        : 2022-10-13 16:55:02
+ */
 func (c *ExcelStruct) Row(row []string) (map[string]interface{}, error) {
 	if c.Fields == nil {
 		//Please fill in the structure pointer
-		return nil, fmt.Errorf("请填写结构体指针")
+		return nil, fmt.Errorf("please fill in the structure pointer")
 	}
 	if c.Err != nil {
 		return nil, c.Err
 	}
 	maps := make(map[string]interface{})
 	for i, colCell := range row {
-		//Cannot judge null value, otherwise
-		//不能判断空值,否则
+		//len should be used for string judgments
+		//字符串判断应该使用len
 		if len(colCell) < 1 {
 			continue
 		}
-		//Determine whether the key name exists
+		//check the key exists
 		//判断键名是否存在
 		if field, ok := c.MapIndex[i]; ok {
 			maps[field] = ""
@@ -201,8 +207,11 @@ func (c *ExcelStruct) Row(row []string) (map[string]interface{}, error) {
 			//时间
 			if fields.FieldType == "time.Time" && len(colCell) > 0 {
 				//colCell的日志在excel可能存在多种形式,这里统一转换为yyyy-MM-DD的形式
-
-				t, err := time.ParseInLocation(DATE_TIME_PATTERN, colCell, time.Local)
+				dateStr, err := gformt.GetFormatDateStr(colCell)
+				if err == nil {
+					colCell = dateStr
+				}
+				t, err := time.ParseInLocation(DATE_PATTERN, colCell, time.Local)
 				if err == nil {
 					maps[field] = t
 				} else {
