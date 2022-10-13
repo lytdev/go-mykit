@@ -17,26 +17,24 @@
 
 > go get -u github.com/lytdev/go-myexcel
 
-结构体`TAG` 中 `gme`(`index`) 必须存在,`json`可不写
+结构体`TAG` 中
 
-`json`: 字段名称,映射成`map`
+`gme->index`: 索序号(从 0 开始),如果不写默认和结构体的字段顺序一直
 
-`gme->index`: 索序号(从 0 开始)
-
-`gme->title`: 名称
+`gme->title`: 名称,如果不写则使用结构体的字段属性名
 
 Excel 对应的结构体参考：
 
 ```golang
 type ExcelBook struct {
- Isbn      string  `json:"isbn" gme:"title:ISBN;index:0"`
- BookName  string  `json:"book_name" mapstructure:"book_name" gme:"title:书名;index:1"`
- Author    string  `json:"author" gme:"title:作者;index:2"`
- PubDate   string  `json:"pub_date" mapstructure:"pub_date" gme:"title:出版日期;index:3"`
- Price     float32 `json:"price" gme:"title:定价;index:4"`
- SuitObj   string  `json:"suit_obj" mapstructure:"suit_obj" gme:"title:适用对象;index:5"`
- MajorType string  `json:"major_type" mapstructure:"major_type" gme:"title:图书类目;index:6"`
- SubMajor  string  `json:"sub_major" mapstructure:"sub_major" gme:"title:细分类目;index:7"`
+  Isbn      string  `gme:"title:ISBN;index:0"`
+ BookName  string  `gme:"title:书名;index:1"`
+ Author    string  `gme:"title:作者;index:2"`
+ PubDate   string  `gme:"title:出版日期;index:3"`
+ Price     float32 `gme:"title:定价;index:4"`
+ SuitObj   string  `gme:"title:适用对象;index:5"`
+ MajorType string  `gme:"title:图书类目;index:6"`
+ SubMajor  string  `gme:"title:细分类目;index:7"`
 }
 ```
 
@@ -62,18 +60,18 @@ import (
 )
 
 type ExcelTest struct {
- Isbn      string  `json:"isbn" gme:"title:ISBN;index:0"`
- BookName  string  `json:"book_name" mapstructure:"book_name" gme:"title:书名;index:1"`
- Author    string  `json:"author" gme:"title:作者;index:2"`
- PubDate   string  `json:"pub_date" mapstructure:"pub_date" gme:"title:出版日期;index:3"`
- Price     float32 `json:"price" gme:"title:定价;index:4"`
- SuitObj   string  `json:"suit_obj" mapstructure:"suit_obj" gme:"title:适用对象;index:5"`
- MajorType string  `json:"major_type" mapstructure:"major_type" gme:"title:图书类目;index:6"`
- SubMajor  string  `json:"sub_major" mapstructure:"sub_major" gme:"title:细分类目;index:7"`
+ Isbn      string  `gme:"title:ISBN;index:0"`
+ BookName  string  `gme:"title:书名;index:1"`
+ Author    string  `gme:"title:作者;index:2"`
+ PubDate   string  `gme:"title:出版日期;index:3"`
+ Price     float32 `gme:"title:定价;index:4"`
+ SuitObj   string  `gme:"title:适用对象;index:5"`
+ MajorType string  `gme:"title:图书类目;index:6"`
+ SubMajor  string  `gme:"title:细分类目;index:7"`
 }
 
 func main() {
- filePath := "D:\\2022-2云展\\调整标题后\\人邮社本科教材.xlsx"
+ filePath := "D:\\测试数据\\图书列表.xlsx"
  xlsx, err := excelize.OpenFile(filePath)
  if err != nil {
   t.Error("文件读取异常:", err)
