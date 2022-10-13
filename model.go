@@ -23,7 +23,6 @@ const (
 	DATE_PATTERN         = "2006-01-02"
 	DATE_TIME_PATTERN    = "2006-01-02 15:04:05"
 	TAG_CUSTOM_KEY       = "gme"
-	TAG_MAP_KEY          = "json"
 	TAG_CUSTOM_TITLE_KEY = "title"
 	TAG_CUSTOM_INDEX_KEY = "index"
 )
@@ -35,11 +34,11 @@ const (
  */
 type ExcelFields struct {
 	//name
-	Name string //名称
+	Title string //名称
 	//Index starts at 0
 	Index int //索引  从0 开始
 	//JSON field name
-	Field string //json 字段名称
+	Name string //json 字段名称
 	//Field type
 	FieldType string //字段类型
 	//Save all tags
@@ -77,7 +76,7 @@ type Callback func(maps map[string]interface{}) error
 
 /**
  * @Description : set Struct pointer
- * @Description : 设置转换的结构体
+ * @Description : 设置并构造转换的结构体
  * @param        {interface{}} ptr
  * @return       {*}
  * @Date        : 2022-10-13 17:17:10
@@ -101,28 +100,24 @@ func (c *ExcelStruct) SetPointerStruct(ptr interface{}) *ExcelStruct {
 		// 取tag
 		fieldInfo := v.Type().Field(i)
 		//
-		fields := ExcelFields{}
 		tag := fieldInfo.Tag
+		fields := ExcelFields{}
 		//Parsing
-		// 解析
-		fields.Field = tag.Get(TAG_CUSTOM_KEY)
-		if fields.Field == "" {
-			fields.Field = fieldInfo.Name
-		}
+		// 解析tag
 		tagStr := tag.Get(TAG_CUSTOM_KEY)
-		index := 0
+		index := i
+		fields.Name = fieldInfo.Name
 		if tagStr == "" {
-			fields.Name = fieldInfo.Name
+			fields.Title = fieldInfo.Name
 		} else {
 			tagMap := gconv.TagConvMap(tagStr)
 			if title, ok := tagMap[TAG_CUSTOM_TITLE_KEY]; ok {
-				fields.Name = title
+				fields.Title = title
 			}
 			if indexStr, ok := tagMap[TAG_CUSTOM_INDEX_KEY]; ok {
 				index, _ = strconv.Atoi(indexStr)
 			}
 		}
-
 		//If the index is large, the value is assigned
 		//如果索引大,那么赋值
 		if c.IndexMax < index {
@@ -131,19 +126,18 @@ func (c *ExcelStruct) SetPointerStruct(ptr interface{}) *ExcelStruct {
 		fields.Index = index
 		fields.FieldType = fieldInfo.Type.String()
 		m := make(map[string]string)
-		m[TAG_MAP_KEY] = fields.Field
-		m[TAG_CUSTOM_TITLE_KEY] = fields.Name
+		m[TAG_CUSTOM_TITLE_KEY] = fields.Title
 		m[TAG_CUSTOM_INDEX_KEY] = strconv.Itoa(i)
 		fields.Tags = m
 		//
 		if c.Fields == nil {
 			c.Fields = make(map[string]ExcelFields)
 		}
-		c.Fields[fields.Field] = fields
+		c.Fields[fields.Name] = fields
 		if c.MapIndex == nil {
 			c.MapIndex = make(map[int]string)
 		}
-		c.MapIndex[index] = fields.Field
+		c.MapIndex[index] = fields.Name
 	}
 	return c
 }
