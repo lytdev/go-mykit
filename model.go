@@ -108,7 +108,7 @@ func (c *ExcelStruct) SetPointerStruct(ptr interface{}) *ExcelStruct {
 		}
 
 		//If the index is large, the value is assigned
-		//如果索引大 那么赋值
+		//如果索引大,那么赋值
 		if c.IndexMax < index {
 			c.IndexMax = index
 		}
@@ -138,8 +138,14 @@ func (c *ExcelStruct) RowsProcess(rows [][]string, callback Callback) error {
 	return c.RowsAllProcess(rows, callback)
 }
 
-//process
-//处理
+/**
+ * @Description : 处理sheet的rows
+ *  process
+ * @param        {[][]string} rows
+ * @param        {Callback} callback
+ * @return       {*}
+ * @Date        : 2022-10-13 17:03:00
+ */
 func (c *ExcelStruct) RowsAllProcess(rows [][]string, callback Callback) error {
 	if c.Fields == nil {
 		//Please fill in the structure pointer
@@ -183,11 +189,22 @@ func (c *ExcelStruct) Row(row []string) (map[string]interface{}, error) {
 	if c.Err != nil {
 		return nil, c.Err
 	}
+	//行转map
+	return c.row2Map(row)
+}
+
+/**
+ * @Description :行转map的核心逻辑,主要是处理一些特殊的格式(日期、数字、时间)
+ * @param        {[]string} row
+ * @return       {*}
+ * @Date        : 2022-10-13 17:08:43
+ */
+func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 	maps := make(map[string]interface{})
 	for i, colCell := range row {
 		//len should be used for string judgments
 		//字符串判断应该使用len
-		if len(colCell) < 1 {
+		if colCell == "" || len(colCell) < 1 {
 			continue
 		}
 		//check the key exists
@@ -378,5 +395,4 @@ func (c *ExcelStruct) Row(row []string) (map[string]interface{}, error) {
 			}
 		}
 	}
-	return maps, nil
 }
