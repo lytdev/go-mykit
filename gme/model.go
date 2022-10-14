@@ -12,12 +12,21 @@ import (
 )
 
 const (
-	DATE_PATTERN         = "2006-01-02"
-	DATE_TIME_PATTERN    = "2006-01-02 15:04:05"
-	TAG_CUSTOM_KEY       = "gme"
-	TAG_CUSTOM_TITLE_KEY = "title"
-	TAG_CUSTOM_INDEX_KEY = "index"
+	DATE_PATTERN          = "2006-01-02"
+	DATE_TIME_PATTERN     = "2006-01-02 15:04:05"
+	TAG_CUSTOM_KEY        = "gme"
+	TAG_CUSTOM_TITLE_KEY  = "title"
+	TAG_CUSTOM_INDEX_KEY  = "index"
+	TAG_CUSTOM_FORMAT_KEY = "format"
 )
+
+var arr = [...]string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+	"N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+
+func toCharStrArr(i int) string {
+	return arr[i]
+
+}
 
 /**
  * @Description : 字段
@@ -28,7 +37,8 @@ type ExcelFields struct {
 	//name
 	Title string //名称
 	//Index starts at 0
-	Index int //索引  从0 开始
+	Index  int    //索引  从0 开始
+	Format string //索引  从0 开始
 	//JSON field name
 	Name string //json 字段名称
 	//Field type
