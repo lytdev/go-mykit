@@ -57,3 +57,5 @@ go get github.com/xuri/excelize/v2
 ```
 
 使用文档：<https://github.com/lytdev/go-myexcel/wiki>
+
+目前在`excel`支持的日期格式：<https://github.com/lytdev/go-myexcel/blob/main/gformt/dateformat_test.go>

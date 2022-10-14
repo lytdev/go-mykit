@@ -40,10 +40,10 @@ func Test_Format(t *testing.T) {
 		"pubDate23 ": "2022年2月01日",
 		"pubDate24 ": "202202",
 		"pubDate25 ": "20220201",
-		"pubDate26 ": "2022.2.120",
-		"pubDate27 ": "2022/0262",
-		"pubDate28 ": "2022/13/12",
-		"pubDate29 ": "2022/12/32",
+		"pubDate26 ": "2022.2.120", //err
+		"pubDate27 ": "2022/0262",  //err
+		"pubDate28 ": "2022/13/12", //err
+		"pubDate29 ": "2022/12/32", //err
 		"pubDate30 ": "2022/12/21 09:59",
 		"pubDate31 ": "2022/12/30 9:59",
 		"pubDate32 ": "2022/12/31 9:1:10",
@@ -53,11 +53,11 @@ func Test_Format(t *testing.T) {
 		"pubDate36 ": "2022年12月31 9:1:10 PM",
 		"pubDate37 ": "2022年12月31日 9时1分10秒",
 		"pubDate38 ": "2022年12月31日9时1分10秒",
-		"pubDate39 ": "2022-12-31 9:1:61",
+		"pubDate39 ": "2022-12-31 9:1:61", //err
 		"pubDate40 ": "2022-12-31 9:1 PM",
-		"pubDate41 ": "2022年12月31日 9:62:10",
+		"pubDate41 ": "2022年12月31日 9:62:10", //err
 		"pubDate42 ": "2022-12-31 9:1:10 PM",
-		"pubDate43 ": "2022-12-31 25:1:10 AM",
+		"pubDate43 ": "2022-12-31 25:1:10 AM", //err
 	}
 
 	keys := make([]string, 0, len(dataMap))
