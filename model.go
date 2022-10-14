@@ -244,7 +244,7 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 				if err == nil {
 					colCell = dateStr
 				}
-				t, err := time.ParseInLocation(DATE_PATTERN, colCell, time.Local)
+				t, err := time.ParseInLocation(DATE_TIME_PATTERN, colCell, time.Local)
 				if err == nil {
 					maps[field] = t
 				} else {

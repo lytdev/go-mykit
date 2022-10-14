@@ -9,20 +9,21 @@
 package gformt
 
 import (
+	"sort"
 	"testing"
 )
 
 func Test_Format(t *testing.T) {
-	data := map[string]string{
-		"pubDate1 ":  "2022.02",
-		"pubDate2 ":  "2022.2",
-		"pubDate3 ":  "2022.02.01",
-		"pubDate4 ":  "2022.02.1",
-		"pubDate5 ":  "2022.2.01",
-		"pubDate6 ":  "2022.2.1",
-		"pubDate7 ":  "2022/02",
-		"pubDate8 ":  "2022/02/01",
-		"pubDate9 ":  "2022/02/1",
+	dataMap := map[string]string{
+		"pubDate01 ": "2022.02",
+		"pubDate02 ": "2022.2",
+		"pubDate03 ": "2022.02.01",
+		"pubDate04 ": "2022.02.1",
+		"pubDate05 ": "2022.2.01",
+		"pubDate06 ": "2022.2.1",
+		"pubDate07 ": "2022/02",
+		"pubDate08 ": "2022/02/01",
+		"pubDate09 ": "2022/02/1",
 		"pubDate10 ": "2022/2",
 		"pubDate11 ": "2022/2/1",
 		"pubDate12 ": "2022/2/01",
@@ -43,16 +44,38 @@ func Test_Format(t *testing.T) {
 		"pubDate27 ": "2022/0262",
 		"pubDate28 ": "2022/13/12",
 		"pubDate29 ": "2022/12/32",
+		"pubDate30 ": "2022/12/21 09:59",
+		"pubDate31 ": "2022/12/30 9:59",
+		"pubDate32 ": "2022/12/31 9:1:10",
+		"pubDate33 ": "2022.12.31 9:1:10",
+		"pubDate34 ": "2022-12-31 9:1:10",
+		"pubDate35 ": "2022-12-31 9:1:10 AM",
+		"pubDate36 ": "2022年12月31 9:1:10 PM",
+		"pubDate37 ": "2022年12月31日 9时1分10秒",
+		"pubDate38 ": "2022年12月31日9时1分10秒",
+		"pubDate39 ": "2022-12-31 9:1:61",
+		"pubDate40 ": "2022-12-31 9:1 PM",
+		"pubDate41 ": "2022年12月31日 9:62:10",
+		"pubDate42 ": "2022-12-31 9:1:10 PM",
+		"pubDate43 ": "2022-12-31 25:1:10 AM",
 	}
 
-	for k, v := range data {
-		p1, err := GetFormatDateStr(v)
-		if err != nil {
-			t.Error("请求错误:", err)
-		} else {
-			t.Log(k + ":" + p1)
-		}
+	keys := make([]string, 0, len(dataMap))
+	for k := range dataMap {
+		keys = append(keys, k)
+	}
 
+	//对切片进行排序
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		val := dataMap[key]
+		p1, err := GetFormatDateStr(val)
+		if err != nil {
+			t.Log(err.Error())
+		} else {
+			t.Logf("key:%s --> value:%s --> format:%s", key, val, p1)
+		}
 	}
 
 }

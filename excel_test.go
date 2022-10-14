@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/lytdev/go-myexcel/mapstructure"
 
@@ -19,14 +20,14 @@ import (
 )
 
 type ExcelTest struct {
-	Isbn      string  `gme:"title:ISBN;index:0"`
-	BookName  string  `gme:"title:书名;index:1"`
-	Author    string  `gme:"title:作者;index:2"`
-	PubDate   string  `gme:"title:出版日期;index:3"`
-	Price     float32 `gme:"title:定价;index:4"`
-	SuitObj   string  `gme:"title:适用对象;index:5"`
-	MajorType string  `gme:"title:图书类目;index:6"`
-	SubMajor  string  `gme:"title:细分类目;index:7"`
+	Isbn      string    `gme:"title:ISBN;index:0"`
+	BookName  string    `gme:"title:书名;index:1"`
+	Author    string    `gme:"title:作者;index:2"`
+	PubDate   time.Time `gme:"title:出版日期;index:3"`
+	Price     float32   `gme:"title:定价;index:4"`
+	SuitObj   string    `gme:"title:适用对象;index:5"`
+	MajorType string    `gme:"title:图书类目;index:6"`
+	SubMajor  string    `gme:"title:细分类目;index:7"`
 }
 
 func TestRead(t *testing.T) {
