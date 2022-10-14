@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	mapstructure "github.com/lytdev/go-mykit/gm2s"
+	"github.com/lytdev/go-mykit/gm2s"
 
 	"github.com/xuri/excelize/v2"
 )
@@ -41,7 +41,7 @@ func TestRead(t *testing.T) {
 	err = NewExcelStructDefault().SetPointerStruct(&ExcelTest{}).RowsAllProcess(rows, func(maps map[string]interface{}) error {
 		var ptr ExcelTest
 		// map 转 结构体
-		if mapErr := mapstructure.Decode(maps, &ptr); mapErr != nil {
+		if mapErr := gm2s.Decode(maps, &ptr); mapErr != nil {
 			return mapErr
 		}
 		resultData = append(resultData, ptr)
