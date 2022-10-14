@@ -1,4 +1,4 @@
-module github.com/lytdev/go-myexcel
+module github.com/lytdev/go-mykit
 
 go 1.18
 

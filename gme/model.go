@@ -2,7 +2,7 @@
  * @Author       : 刘元涛 snoopy_718@mails.ccnu.edu.cn
  * @Date         : 2022-10-11 19:00:26
  * @LastEditors  : 刘元涛 snoopy_718@mails.ccnu.edu.cn
- * @FilePath     : \go-myexcel\model.go
+ * @FilePath     : \go-mykit\gme\model.go
  * @Description  :
  * Copyright (c) 2022 by 刘元涛 snoopy_718@mails.ccnu.edu.cn, All Rights Reserved.
  */
@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lytdev/go-myexcel/gconv"
-	"github.com/lytdev/go-myexcel/gformt"
+	"github.com/lytdev/go-mykit/gconv"
+	"github.com/lytdev/go-mykit/gformt"
 )
 
 const (

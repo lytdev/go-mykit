@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lytdev/go-myexcel/mapstructure"
+	"github.com/lytdev/go-mykit/mapstructure"
 
 	"github.com/xuri/excelize/v2"
 )
