@@ -1,11 +1,3 @@
-/*
- * @Author       : 刘元涛 snoopy_718@mails.ccnu.edu.cn
- * @Date         : 2022-10-11 19:00:26
- * @LastEditors  : 刘元涛 snoopy_718@mails.ccnu.edu.cn
- * @FilePath     : \go-mykit\gme\model.go
- * @Description  :
- * Copyright (c) 2022 by 刘元涛 snoopy_718@mails.ccnu.edu.cn, All Rights Reserved.
- */
 package gme
 
 import (
@@ -16,7 +8,7 @@ import (
 	"time"
 
 	"github.com/lytdev/go-mykit/gconv"
-	"github.com/lytdev/go-mykit/gformt"
+	"github.com/lytdev/go-mykit/gfrmt"
 )
 
 const (
@@ -240,7 +232,7 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 			//时间
 			if fields.FieldType == "time.Time" && len(colCell) > 0 {
 				//colCell的日志在excel可能存在多种形式,这里统一转换为yyyy-MM-DD的形式
-				dateStr, err := gformt.GetFormatDateStr(colCell)
+				dateStr, err := gfrmt.GetFormatDateStr(colCell)
 				if err == nil {
 					colCell = dateStr
 				}

@@ -2,11 +2,11 @@
  * @Author       : 刘元涛 snoopy_718@mails.ccnu.edu.cn
  * @Date         : 2022-10-12 19:23:50
  * @LastEditors  : 刘元涛 snoopy_718@mails.ccnu.edu.cn
- * @FilePath     : \go-myexcel\gformt\dateformat_test.go
+ * @FilePath     : \go-mykit\gfrmt\dateformat_test.go
  * @Description  :
  * Copyright (c) 2022 by 刘元涛 snoopy_718@mails.ccnu.edu.cn, All Rights Reserved.
  */
-package gformt
+package gfrmt
 
 import (
 	"sort"

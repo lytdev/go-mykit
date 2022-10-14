@@ -1,12 +1,4 @@
-/*
- * @Author       : 刘元涛 snoopy_718@mails.ccnu.edu.cn
- * @Date         : 2022-10-13 15:39:47
- * @LastEditors  : 刘元涛 snoopy_718@mails.ccnu.edu.cn
- * @FilePath     : \go-myexcel\gformt\dateformat.go
- * @Description  :
- * Copyright (c) 2022 by 刘元涛 snoopy_718@mails.ccnu.edu.cn, All Rights Reserved.
- */
-package gformt
+package gfrmt
 
 import (
 	"errors"

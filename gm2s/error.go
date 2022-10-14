@@ -6,7 +6,7 @@
  * @Description  :
  * Copyright (c) 2022 by 刘元涛 snoopy_718@mails.ccnu.edu.cn, All Rights Reserved.
  */
-package mapstructure
+package gm2s
 
 import (
 	"errors"

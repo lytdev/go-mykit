@@ -1,11 +1,3 @@
-/*
- * @Author       : 刘元涛 snoopy_718@mails.ccnu.edu.cn
- * @Date         : 2022-10-11 17:53:49
- * @LastEditors  : 刘元涛 snoopy_718@mails.ccnu.edu.cn
- * @FilePath     : \go-myexcel\excel_test.go
- * @Description  :
- * Copyright (c) 2022 by 刘元涛 snoopy_718@mails.ccnu.edu.cn, All Rights Reserved.
- */
 package gme
 
 import (
@@ -14,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lytdev/go-mykit/mapstructure"
+	mapstructure "github.com/lytdev/go-mykit/gm2s"
 
 	"github.com/xuri/excelize/v2"
 )
@@ -31,7 +23,7 @@ type ExcelTest struct {
 }
 
 func TestRead(t *testing.T) {
-	filePath := "_doc/图书列表.xlsx"
+	filePath := "../_doc/图书列表.xlsx"
 	xlsx, err := excelize.OpenFile(filePath)
 	if err != nil {
 		t.Error("文件读取异常:", err)

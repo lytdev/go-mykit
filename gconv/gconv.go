@@ -1,9 +1,9 @@
 /*
  * @Author       : 刘元涛 snoopy_718@mails.ccnu.edu.cn
- * @Date         : 2022-10-11 18:54:39
+ * @Date         : 2022-10-14 11:31:29
  * @LastEditors  : 刘元涛 snoopy_718@mails.ccnu.edu.cn
- * @FilePath     : \go-myexcel\gconv\gconv.go
- * @Description  :
+ * @FilePath     : \go-mykit\gconv\gconv.go
+ * @Description  :将tag标签转换为map
  * Copyright (c) 2022 by 刘元涛 snoopy_718@mails.ccnu.edu.cn, All Rights Reserved.
  */
 package gconv
