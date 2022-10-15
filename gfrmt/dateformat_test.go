@@ -1,9 +1,19 @@
 package gfrmt
 
 import (
+	"regexp"
 	"sort"
 	"testing"
 )
+
+func TestRegexp(t *testing.T) {
+	numStr := "2022.02_6"
+	if matched, _ := regexp.MatchString("^(\\d{4}[.]\\d{1,2}[.]\\d{1,2})$", numStr); matched {
+		t.Log("匹配成功")
+	} else {
+		t.Error("匹配失败")
+	}
+}
 
 func TestFormat(t *testing.T) {
 	dataMap := map[string]string{
