@@ -8,18 +8,13 @@ import (
 	"strings"
 )
 
-/**
-* @Description : 提取日期为统一格式
-* @param        {string} numStr
-* @return       {*}
-* @Date        : 2022-10-12 19:21:33
- */
+// GetFormatDateStr /** 提取日期为统一格式
 func GetFormatDateStr(numStr string) (string, error) {
 	if len(numStr) == 0 {
 		return "", nil
 	}
 	formatDateStr := ""
-	if matched, _ := regexp.MatchString("^(\\d{4}\u5e74{0,1})$", numStr); matched {
+	if matched, _ := regexp.MatchString("^(\\d{4}\u5e74?)$", numStr); matched {
 		//只有年的格式:2022(年)
 		numStr = strings.Replace(numStr, "年", "", 1)
 		formatDateStr = numStr + "-01-01 00:00:00"
@@ -34,14 +29,14 @@ func GetFormatDateStr(numStr string) (string, error) {
 		month := numStr[4:6]
 		day := numStr[6:]
 		formatDateStr = year + "-" + month + "-" + day + " 00:00:00"
-	} else if matched, _ := regexp.MatchString("^(\\d{4}[-/\\.\u5e74]{1}\\d{0,2}[-/\\.\u6708]{0,1}\\d{0,2}\u65e5{0,1})$", numStr); matched {
+	} else if matched, _ := regexp.MatchString("^(\\d{4}[-/.\u5e74]\\d{0,2}[-/.\u6708]?\\d{0,2}\u65e5?)$", numStr); matched {
 		//处理年月日的格式yyyy-dd-MM
 		tmp, err := handlerDateStr(numStr)
 		if err != nil {
 			return formatDateStr, err
 		}
 		formatDateStr = tmp
-	} else if matched, _ := regexp.MatchString("^(\\d{4}[-/\\.\u5e74]{1}\\d{1,2}[-/\\.\u6708]{1}\\d{1,2}\u65e5{0,1}[ ]{0,1}\\d{1,2}[:\u65f6]\\d{1,2}[:\u5206]{0,1}\\d{0,2}[\u79d2]{0,1}[ APM]{0,3})$", numStr); matched {
+	} else if matched, _ := regexp.MatchString("^(\\d{4}[-/.\u5e74]\\d{1,2}[-/.\u6708]\\d{1,2}\u65e5?\\s*\\d{1,2}[:\u65f6]\\d{1,2}[:\u5206]?\\d{0,2}\u79d2?[ APM]{0,3})$", numStr); matched {
 		//处理年月日时分秒的格式yyyy-dd-MM hh:mm:ss
 		tmp, err := handlerDateStr(numStr)
 		if err != nil {

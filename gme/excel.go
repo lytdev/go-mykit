@@ -9,8 +9,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-//By default, it starts from the first row and the index starts from 0
-//默认 从第一行开始,索引从 0开始
+// NewExcelStructDefault 默认 从第一行开始,索引从 0开始
 func NewExcelStructDefault() *ExcelStruct {
 	n := new(ExcelStruct)
 	n.StartRow = 1
@@ -18,8 +17,7 @@ func NewExcelStructDefault() *ExcelStruct {
 	return n
 }
 
-//StartRow starts row, index starts from 0
-//Indexmax indexes the maximum row. If the index in the structure is larger than the configured, the index in the structure is used
+// NewExcelStruct StartRow starts row, index starts from 0
 //StartRow 开始行,索引从 0开始
 //IndexMax  索引最大行,如果 结构体中的 index 大于配置的,那么使用结构体中的
 func NewExcelStruct(StartRow, IndexMax int) *ExcelStruct {
@@ -29,11 +27,7 @@ func NewExcelStruct(StartRow, IndexMax int) *ExcelStruct {
 	return n
 }
 
-/**
- * @Description : 执行写入sheet并返回file对象
- * @return       {*}
- * @Date        : 2022-10-14 14:32:22
- */
+// WriteFile /**
 func WriteFile[T any](n string, dataList []T) (*excelize.File, error) {
 	if len(n) == 0 {
 		n = "Sheet1"
@@ -49,7 +43,10 @@ func WriteFile[T any](n string, dataList []T) (*excelize.File, error) {
 	//获取结构体的字段类型
 	fm := getStructInit(ptr)
 	for _, field := range fm.Fields {
-		f.SetCellValue(n, toCharStrArr(field.Index)+"1", field.Title)
+		err := f.SetCellValue(n, toCharStrArr(field.Index)+"1", field.Title)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	ref := reflect.ValueOf(ptr).Elem()
@@ -66,13 +63,22 @@ func WriteFile[T any](n string, dataList []T) (*excelize.File, error) {
 			if excelField.FieldType == "time.Time" {
 				cellTime := tmpData.(time.Time)
 				if excelField.Format == "datetime" {
-					f.SetCellValue(n, toCharStrArr(excelField.Index)+strconv.Itoa(index+2), cellTime.Format(DATE_TIME_PATTERN))
+					err := f.SetCellValue(n, toCharStrArr(excelField.Index)+strconv.Itoa(index+2), cellTime.Format(DATE_TIME_PATTERN))
+					if err != nil {
+						return nil, err
+					}
 				} else {
-					f.SetCellValue(n, toCharStrArr(excelField.Index)+strconv.Itoa(index+2), cellTime.Format(DATE_PATTERN))
+					err := f.SetCellValue(n, toCharStrArr(excelField.Index)+strconv.Itoa(index+2), cellTime.Format(DATE_PATTERN))
+					if err != nil {
+						return nil, err
+					}
 				}
 
 			} else {
-				f.SetCellValue(n, toCharStrArr(excelField.Index)+strconv.Itoa(index+2), tmpData)
+				err := f.SetCellValue(n, toCharStrArr(excelField.Index)+strconv.Itoa(index+2), tmpData)
+				if err != nil {
+					return nil, err
+				}
 			}
 		}
 	}

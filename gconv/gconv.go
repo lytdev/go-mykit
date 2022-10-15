@@ -2,12 +2,7 @@ package gconv
 
 import "strings"
 
-/**
- * @Description : tag 转map
- * @param        {string} tagStr
- * @return       {*}
- * @Date        : 2022-10-11 17:24:08
- */
+// TagConvMap /** tag 转map
 func TagConvMap(tagStr string) map[string]string {
 	resultData := make(map[string]string)
 	splitData := strings.Split(tagStr, ";")

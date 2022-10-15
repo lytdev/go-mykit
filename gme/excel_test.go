@@ -19,7 +19,7 @@ type ExcelTest struct {
 	Price     float32   `gme:"title:定价;index:3"`
 	SuitObj   string    `gme:"title:适用对象;index:5"`
 	MajorType string    `gme:"title:图书类目;index:6"`
-	SubMajor  string    `gme:"title:细分类目;index:7";`
+	SubMajor  string    `gme:"title:细分类目;index:7"`
 }
 
 func TestRead(t *testing.T) {
@@ -62,7 +62,7 @@ func TestWriteFile(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	var dataList = []ExcelTest{}
+	var dataList []ExcelTest
 	dataList = append(dataList, ExcelTest{
 		Isbn:      "9787115375698",
 		BookName:  "Excel 2013在会计与财务管理日常工作中的应用",

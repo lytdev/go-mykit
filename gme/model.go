@@ -28,11 +28,7 @@ func toCharStrArr(i int) string {
 
 }
 
-/**
- * @Description : 字段
- * @return       {*}
- * @Date        : 2022-10-11 19:00:44
- */
+// ExcelFields /**Excel的字段属性
 type ExcelFields struct {
 	//name
 	Title string //名称
@@ -47,12 +43,7 @@ type ExcelFields struct {
 	Tags map[string]string // 保存所有tags
 }
 
-/**
- * @Description : 封装对象
- * @Description : init struct
- * @return       {*}
- * @Date        : 2022-10-11 19:00:50
- */
+// ExcelStruct /** 封装对象
 type ExcelStruct struct {
 	// index sort
 	MapIndex map[int]string //按照 index 排序
@@ -68,21 +59,10 @@ type ExcelStruct struct {
 	ConvertTypeErr bool //类型转换时候,产生错误时是否直接提示报错
 }
 
-/**
- * @Description :定义回调函数
- * @param        {map[string]interface{}} maps
- * @return       {*}
- * @Date        : 2022-10-13 17:20:25
- */
+// Callback /** 定义回调函数
 type Callback func(maps map[string]interface{}) error
 
-/**
- * @Description : set Struct pointer
- * @Description : 设置并构造转换的结构体
- * @param        {interface{}} ptr
- * @return       {*}
- * @Date        : 2022-10-13 17:17:10
- */
+// SetPointerStruct /** 设置并构造转换的结构体
 func (c *ExcelStruct) SetPointerStruct(ptr interface{}) *ExcelStruct {
 	//Gets the type of the input parameter
 	// 获取入参的类型
@@ -144,25 +124,12 @@ func (c *ExcelStruct) SetPointerStruct(ptr interface{}) *ExcelStruct {
 	return c
 }
 
-/**
- * @Description : 处理函数
- * @param        {[][]string} rows
- * @param        {Callback} callback
- * @return       {*}
- * @Date        : 2022-10-13 17:20:40
- */
+// RowsProcess /** 处理函数
 func (c *ExcelStruct) RowsProcess(rows [][]string, callback Callback) error {
 	return c.RowsAllProcess(rows, callback)
 }
 
-/**
- * @Description : process sheet rows
- * @Description : 处理sheet的rows
- * @param        {[][]string} rows
- * @param        {Callback} callback
- * @return       {*}
- * @Date        : 2022-10-13 17:03:00
- */
+// RowsAllProcess /** 处理sheet的rows
 func (c *ExcelStruct) RowsAllProcess(rows [][]string, callback Callback) error {
 	if c.Fields == nil {
 		//Please fill in the structure pointer
@@ -191,13 +158,7 @@ func (c *ExcelStruct) RowsAllProcess(rows [][]string, callback Callback) error {
 	return nil
 }
 
-/**
-* @Description : Process a row of data and convert the row data into a map according to index
-* @Description : 处理一行的数据,将行数据根据index转换成map
-* @param        {[]string} row
-* @return       {*}
-* @Date        : 2022-10-13 16:55:02
- */
+// Row /** 处理一行的数据,将行数据根据index转换成map
 func (c *ExcelStruct) Row(row []string) (map[string]interface{}, error) {
 	if c.Fields == nil {
 		//Please fill in the structure pointer
@@ -268,7 +229,7 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 						maps[field] = false
 					}
 				case "int":
-					int, err := strconv.Atoi(colCell)
+					tmpInt, err := strconv.Atoi(colCell)
 					if err != nil {
 						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
@@ -277,10 +238,10 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 						}
 						maps[field] = 0
 					} else {
-						maps[field] = int
+						maps[field] = tmpInt
 					}
 				case "int8":
-					int, err := strconv.ParseInt(colCell, 10, 8)
+					tmpInt, err := strconv.ParseInt(colCell, 10, 8)
 					if err != nil {
 						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
@@ -289,10 +250,10 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 						}
 						maps[field] = 0
 					} else {
-						maps[field] = int
+						maps[field] = tmpInt
 					}
 				case "int16":
-					int, err := strconv.ParseInt(colCell, 10, 16)
+					tmpInt, err := strconv.ParseInt(colCell, 10, 16)
 					if err != nil {
 						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
@@ -301,10 +262,10 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 						}
 						maps[field] = 0
 					} else {
-						maps[field] = int
+						maps[field] = tmpInt
 					}
 				case "int32":
-					int, err := strconv.ParseInt(colCell, 10, 32)
+					tmpInt, err := strconv.ParseInt(colCell, 10, 32)
 					if err != nil {
 						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
@@ -313,10 +274,10 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 						}
 						maps[field] = 0
 					} else {
-						maps[field] = int
+						maps[field] = tmpInt
 					}
 				case "int64":
-					int, err := strconv.ParseInt(colCell, 10, 64)
+					tmpInt, err := strconv.ParseInt(colCell, 10, 64)
 					if err != nil {
 						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
@@ -325,11 +286,11 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 						}
 						maps[field] = 0
 					} else {
-						maps[field] = int
+						maps[field] = tmpInt
 					}
 					//fmt.Println("int64=", int)
 				case "uint":
-					int, err := strconv.Atoi(colCell)
+					tmpInt, err := strconv.Atoi(colCell)
 					if err != nil {
 						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
@@ -338,10 +299,10 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 						}
 						maps[field] = 0
 					} else {
-						maps[field] = uint(int)
+						maps[field] = uint(tmpInt)
 					}
 				case "uint8":
-					int, err := strconv.ParseUint(colCell, 10, 8)
+					tmpInt, err := strconv.ParseUint(colCell, 10, 8)
 					if err != nil {
 						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
@@ -350,10 +311,10 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 						}
 						maps[field] = 0
 					} else {
-						maps[field] = int
+						maps[field] = tmpInt
 					}
 				case "uint16":
-					int, err := strconv.ParseUint(colCell, 10, 16)
+					tmpInt, err := strconv.ParseUint(colCell, 10, 16)
 					if err != nil {
 						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
@@ -362,10 +323,10 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 						}
 						maps[field] = 0
 					} else {
-						maps[field] = int
+						maps[field] = tmpInt
 					}
 				case "uint32":
-					int, err := strconv.ParseUint(colCell, 10, 32)
+					tmpInt, err := strconv.ParseUint(colCell, 10, 32)
 					if err != nil {
 						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
@@ -374,17 +335,17 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 						}
 						maps[field] = 0
 					} else {
-						maps[field] = int
+						maps[field] = tmpInt
 					}
 				case "uint64":
-					int, err := strconv.ParseUint(colCell, 10, 64)
+					tmpInt, err := strconv.ParseUint(colCell, 10, 64)
 					if err != nil {
 						maps[field] = 0
 					} else {
-						maps[field] = int
+						maps[field] = tmpInt
 					}
 				case "float32":
-					int, err := strconv.ParseFloat(colCell, 32)
+					tmpInt, err := strconv.ParseFloat(colCell, 32)
 					if err != nil {
 						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
@@ -393,10 +354,10 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 						}
 						maps[field] = 0
 					} else {
-						maps[field] = int
+						maps[field] = tmpInt
 					}
 				case "float64":
-					int, err := strconv.ParseFloat(colCell, 64)
+					tmpInt, err := strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
@@ -405,7 +366,7 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 						}
 						maps[field] = 0
 					} else {
-						maps[field] = int
+						maps[field] = tmpInt
 					}
 				case "string":
 					maps[field] = colCell

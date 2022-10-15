@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func Test_Format(t *testing.T) {
+func TestFormat(t *testing.T) {
 	dataMap := map[string]string{
 		"pubDate01 ": "2022.02",
 		"pubDate02 ": "2022.2",
@@ -50,6 +50,7 @@ func Test_Format(t *testing.T) {
 		"pubDate41 ": "2022年12月31日 9:62:10", //err
 		"pubDate42 ": "2022-12-31 9:1:10 PM",
 		"pubDate43 ": "2022-12-31 25:1:10 AM", //err
+		"pubDate44 ": "2022_12-31 25:1:10 AM", //err
 	}
 
 	keys := make([]string, 0, len(dataMap))
@@ -64,9 +65,9 @@ func Test_Format(t *testing.T) {
 		val := dataMap[key]
 		p1, err := GetFormatDateStr(val)
 		if err != nil {
-			t.Log(err.Error())
+			t.Logf("日期的名称:%s --> 错误信息:%s", key, err.Error())
 		} else {
-			t.Logf("key:%s --> value:%s --> format:%s", key, val, p1)
+			t.Logf("日期的名称:%s --> 日期的值:%s --> format:%s", key, val, p1)
 		}
 	}
 
