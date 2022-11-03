@@ -2,7 +2,7 @@ package gconv
 
 import "strings"
 
-// TagConvMap /** tag 转map
+// TagConvMap /** 结构体的tag(tag的多个kay-value是使用;隔开的)转map
 func TagConvMap(tagStr string) map[string]string {
 	resultData := make(map[string]string)
 	splitData := strings.Split(tagStr, ";")

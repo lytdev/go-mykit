@@ -1,25 +1,24 @@
-package gme
+package gxlsx
 
 import (
 	"fmt"
+	"github.com/lytdev/go-mykit/gmap2struct"
 	"os"
 	"testing"
 	"time"
-
-	"github.com/lytdev/go-mykit/gm2s"
 
 	"github.com/xuri/excelize/v2"
 )
 
 type ExcelTest struct {
-	Isbn      string    `gme:"title:ISBN;index:1"`
-	BookName  string    `gme:"title:书名;index:0"`
-	Author    string    `gme:"title:作者;index:2"`
-	PubDate   time.Time `gme:"title:出版日期;index:4;format:datetime"`
-	Price     float32   `gme:"title:定价;index:3"`
-	SuitObj   string    `gme:"title:适用对象;index:5"`
-	MajorType string    `gme:"title:图书类目;index:6"`
-	SubMajor  string    `gme:"title:细分类目;index:7"`
+	Isbn      string    `gxlsx:"title:ISBN;index:1"`
+	BookName  string    `gxlsx:"title:书名;index:0"`
+	Author    string    `gxlsx:"title:作者;index:2"`
+	PubDate   time.Time `gxlsx:"title:出版日期;index:4;format:datetime"`
+	Price     float32   `gxlsx:"title:定价;index:3"`
+	SuitObj   string    `gxlsx:"title:适用对象;index:5"`
+	MajorType string    `gxlsx:"title:图书类目;index:6"`
+	SubMajor  string    `gxlsx:"title:细分类目;index:7"`
 }
 
 func TestRead(t *testing.T) {
@@ -40,15 +39,15 @@ func TestRead(t *testing.T) {
 	var resultData []ExcelTest
 	err = NewExcelStructDefault().SetPointerStruct(&ExcelTest{}).RowsAllProcess(rows, func(maps map[string]interface{}) error {
 		var ptr ExcelTest
-		// map 转 结构体
-		if mapErr := gm2s.Decode(maps, &ptr); mapErr != nil {
+		// map转结构体
+		if mapErr := gmap2struct.Decode(maps, &ptr); mapErr != nil {
 			return mapErr
 		}
 		resultData = append(resultData, ptr)
 		return nil
 	})
 	if err != nil {
-		t.Error("转换出现错误:", err)
+		t.Error(err)
 		os.Exit(1)
 	}
 	for _, data := range resultData {
@@ -58,7 +57,7 @@ func TestRead(t *testing.T) {
 }
 
 func TestWriteFile(t *testing.T) {
-	pubDate, err := time.ParseInLocation(DATE_PATTERN, "2021-12-01", time.Local)
+	pubDate, err := time.ParseInLocation(DatePattern, "2021-12-01", time.Local)
 	if err != nil {
 		fmt.Println(err)
 	}

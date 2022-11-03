@@ -1,6 +1,7 @@
-package gme
+package gxlsx
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -12,51 +13,47 @@ import (
 )
 
 const (
-	DATE_PATTERN          = "2006-01-02"
-	DATE_TIME_PATTERN     = "2006-01-02 15:04:05"
-	TAG_CUSTOM_KEY        = "gme"
-	TAG_CUSTOM_TITLE_KEY  = "title"
-	TAG_CUSTOM_INDEX_KEY  = "index"
-	TAG_CUSTOM_FORMAT_KEY = "format"
+	DatePattern        = "2006-01-02"
+	DateTimePattern    = "2006-01-02 15:04:05"
+	TagCustomKey       = "gxlsx"
+	TagCustomTitleKey  = "title"
+	TagCustomIndexKey  = "index"
+	TagCustomFormatKey = "format"
 )
 
-var arr = [...]string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-	"N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+var arr = [...]string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
+	"T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM",
+	"AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ"}
 
-func toCharStrArr(i int) string {
-	return arr[i]
+func toCharStrArr(i int) (string, error) {
+	if i > 52 {
+		return "", errors.New("不支持excel超过52列")
+	}
+	if i < 0 {
+		return "", errors.New("列索引设置错误,必须是正数")
+	}
+	return arr[i], nil
 
 }
 
 // ExcelFields /**Excel的字段属性
 type ExcelFields struct {
-	//name
-	Title string //名称
-	//Index starts at 0
-	Index  int    //索引  从0 开始
-	Format string //索引  从0 开始
-	//JSON field name
-	Name string //json 字段名称
-	//Field type
-	FieldType string //字段类型
-	//Save all tags
-	Tags map[string]string // 保存所有tags
+	Title     string            //名称
+	Index     int               //索引,从0开始
+	Format    string            //所以的格式化类型(datetime),没有标注的话,默认是属性的类型
+	Name      string            //json字段名称
+	FieldType string            //字段类型
+	Tags      map[string]string //保存所有tags
 }
 
 // ExcelStruct /** 封装对象
 type ExcelStruct struct {
-	// index sort
-	MapIndex map[int]string //按照 index 排序
-	//max index
-	IndexMax int // index 最大
-	//All fields
-	Fields map[string]ExcelFields //所有字段
-	//The first few lines start with specific data
-	StartRow int //第几行开始为具体数据
-	//error
-	Err error //错误
-	//During type conversion, whether to directly prompt to report an error when an error occurs
-	ConvertTypeErr bool //类型转换时候,产生错误时是否直接提示报错
+	MapIndex       map[int]string         //按照index排序的map
+	IndexMax       int                    //列index最大值
+	Fields         map[string]ExcelFields //所有字段
+	StartRow       int                    //第几行开始为具体数据
+	Err            error                  //错误
+	ConvertTypeErr bool                   //类型转换时候,产生错误时是否直接提示报错
 }
 
 // Callback /** 定义回调函数
@@ -64,52 +61,47 @@ type Callback func(maps map[string]interface{}) error
 
 // SetPointerStruct /** 设置并构造转换的结构体
 func (c *ExcelStruct) SetPointerStruct(ptr interface{}) *ExcelStruct {
-	//Gets the type of the input parameter
 	// 获取入参的类型
 	t := reflect.TypeOf(ptr)
 	if t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
-		//Argument should be a struct pointer
+		//参数必须是结构体
 		c.Err = fmt.Errorf("the argument should be a pointer to the structure")
 		return c
 	}
-	//Take the structure variable that the pointer points to
 	// 取指针指向的结构体变量
 	v := reflect.ValueOf(ptr).Elem()
-	//Parsing fields
-	// 解析字段
+	// 解析字段属性
 	for i := 0; i < v.NumField(); i++ {
-		//Take tag
 		// 取tag
 		fieldInfo := v.Type().Field(i)
-		//
 		tag := fieldInfo.Tag
 		fields := ExcelFields{}
-		//Parsing
 		// 解析tag
-		tagStr := tag.Get(TAG_CUSTOM_KEY)
+		tagStr := tag.Get(TagCustomKey)
 		index := i
 		fields.Name = fieldInfo.Name
 		if tagStr == "" {
 			fields.Title = fieldInfo.Name
 		} else {
 			tagMap := gconv.TagConvMap(tagStr)
-			if title, ok := tagMap[TAG_CUSTOM_TITLE_KEY]; ok {
+			if title, ok := tagMap[TagCustomTitleKey]; ok {
 				fields.Title = title
 			}
-			if indexStr, ok := tagMap[TAG_CUSTOM_INDEX_KEY]; ok {
+			if indexStr, ok := tagMap[TagCustomIndexKey]; ok {
 				index, _ = strconv.Atoi(indexStr)
 			}
 		}
-		//If the index is large, the value is assigned
 		//如果索引大,那么赋值
 		if c.IndexMax < index {
 			c.IndexMax = index
 		}
+		//列的索引值
 		fields.Index = index
+		//结构体属性的类型
 		fields.FieldType = fieldInfo.Type.String()
 		m := make(map[string]string)
-		m[TAG_CUSTOM_TITLE_KEY] = fields.Title
-		m[TAG_CUSTOM_INDEX_KEY] = strconv.Itoa(i)
+		m[TagCustomTitleKey] = fields.Title
+		m[TagCustomIndexKey] = strconv.Itoa(i)
 		fields.Tags = m
 		//
 		if c.Fields == nil {
@@ -132,16 +124,13 @@ func (c *ExcelStruct) RowsProcess(rows [][]string, callback Callback) error {
 // RowsAllProcess /** 处理sheet的rows
 func (c *ExcelStruct) RowsAllProcess(rows [][]string, callback Callback) error {
 	if c.Fields == nil {
-		//Please fill in the structure pointer
 		return fmt.Errorf("请填写结构体指针")
 	}
 	if c.Err != nil {
 		return c.Err
 	}
-	//data := []interface{}{}
 	for index, row := range rows {
-		//If the index is less than the set start row, skip
-		//如果 索引 小于 已设置的 开始行,那么跳过
+		//如果索引小于已设置的开始行,那么跳过
 		if index < c.StartRow {
 			continue
 		}
@@ -203,19 +192,23 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 			//时间
 			if fields.FieldType == "time.Time" && len(colCell) > 0 {
 				//colCell的日志在excel可能存在多种形式,这里统一转换为yyyy-MM-DD的形式
-				dateStr, err := gfrmt.GetFormatDateStr(colCell)
-				if err == nil {
-					colCell = dateStr
-				}
-				t, err := time.ParseInLocation(DATE_TIME_PATTERN, colCell, time.Local)
-				if err == nil {
-					maps[field] = t
-				} else {
-					//During type conversion, whether to directly prompt to report an error when an error occurs
+				dateStr, formatErr := gfrmt.GetFormatDateStr(colCell)
+				if formatErr != nil {
 					//类型转换时候,产生错误时是否直接提示报错
 					if c.ConvertTypeErr {
-						return nil, err
+						return maps, formatErr
 					}
+				} else {
+					colCell = dateStr
+				}
+				t, parseErr := time.ParseInLocation(DateTimePattern, colCell, time.Local)
+				if parseErr != nil {
+					//类型转换时候,产生错误时是否直接提示报错
+					if c.ConvertTypeErr {
+						return nil, parseErr
+					}
+				} else {
+					maps[field] = t
 				}
 			} else {
 				//other
@@ -231,10 +224,9 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 				case "int":
 					tmpInt, err := strconv.Atoi(colCell)
 					if err != nil {
-						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
 						if c.ConvertTypeErr {
-							return nil, err
+							return nil, fmtErr(fields.FieldType, colCell)
 						}
 						maps[field] = 0
 					} else {
@@ -243,10 +235,9 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 				case "int8":
 					tmpInt, err := strconv.ParseInt(colCell, 10, 8)
 					if err != nil {
-						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
 						if c.ConvertTypeErr {
-							return nil, err
+							return nil, fmtErr(fields.FieldType, colCell)
 						}
 						maps[field] = 0
 					} else {
@@ -255,10 +246,9 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 				case "int16":
 					tmpInt, err := strconv.ParseInt(colCell, 10, 16)
 					if err != nil {
-						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
 						if c.ConvertTypeErr {
-							return nil, err
+							return nil, fmtErr(fields.FieldType, colCell)
 						}
 						maps[field] = 0
 					} else {
@@ -267,10 +257,9 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 				case "int32":
 					tmpInt, err := strconv.ParseInt(colCell, 10, 32)
 					if err != nil {
-						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
 						if c.ConvertTypeErr {
-							return nil, err
+							return nil, fmtErr(fields.FieldType, colCell)
 						}
 						maps[field] = 0
 					} else {
@@ -279,23 +268,20 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 				case "int64":
 					tmpInt, err := strconv.ParseInt(colCell, 10, 64)
 					if err != nil {
-						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
 						if c.ConvertTypeErr {
-							return nil, err
+							return nil, fmtErr(fields.FieldType, colCell)
 						}
 						maps[field] = 0
 					} else {
 						maps[field] = tmpInt
 					}
-					//fmt.Println("int64=", int)
 				case "uint":
 					tmpInt, err := strconv.Atoi(colCell)
 					if err != nil {
-						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
 						if c.ConvertTypeErr {
-							return nil, err
+							return nil, fmtErr(fields.FieldType, colCell)
 						}
 						maps[field] = 0
 					} else {
@@ -304,10 +290,9 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 				case "uint8":
 					tmpInt, err := strconv.ParseUint(colCell, 10, 8)
 					if err != nil {
-						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
 						if c.ConvertTypeErr {
-							return nil, err
+							return nil, fmtErr(fields.FieldType, colCell)
 						}
 						maps[field] = 0
 					} else {
@@ -316,10 +301,9 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 				case "uint16":
 					tmpInt, err := strconv.ParseUint(colCell, 10, 16)
 					if err != nil {
-						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
 						if c.ConvertTypeErr {
-							return nil, err
+							return nil, fmtErr(fields.FieldType, colCell)
 						}
 						maps[field] = 0
 					} else {
@@ -328,10 +312,9 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 				case "uint32":
 					tmpInt, err := strconv.ParseUint(colCell, 10, 32)
 					if err != nil {
-						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
 						if c.ConvertTypeErr {
-							return nil, err
+							return nil, fmtErr(fields.FieldType, colCell)
 						}
 						maps[field] = 0
 					} else {
@@ -340,6 +323,10 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 				case "uint64":
 					tmpInt, err := strconv.ParseUint(colCell, 10, 64)
 					if err != nil {
+						//类型转换时候,产生错误时是否直接提示报错
+						if c.ConvertTypeErr {
+							return nil, fmtErr(fields.FieldType, colCell)
+						}
 						maps[field] = 0
 					} else {
 						maps[field] = tmpInt
@@ -347,10 +334,9 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 				case "float32":
 					tmpInt, err := strconv.ParseFloat(colCell, 32)
 					if err != nil {
-						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
 						if c.ConvertTypeErr {
-							return nil, err
+							return nil, fmtErr(fields.FieldType, colCell)
 						}
 						maps[field] = 0
 					} else {
@@ -359,10 +345,9 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 				case "float64":
 					tmpInt, err := strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						//During type conversion, whether to directly prompt to report an error when an error occurs
 						//类型转换时候,产生错误时是否直接提示报错
 						if c.ConvertTypeErr {
-							return nil, err
+							return nil, fmtErr(fields.FieldType, colCell)
 						}
 						maps[field] = 0
 					} else {
@@ -375,4 +360,8 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 		}
 	}
 	return maps, nil
+}
+
+func fmtErr(typeName, cellVal string) error {
+	return fmt.Errorf("类型转换出现错误，属性类型：%s，待转换的值：%s", typeName, cellVal)
 }

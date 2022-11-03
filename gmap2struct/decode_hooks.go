@@ -1,4 +1,4 @@
-package gm2s
+package gmap2struct
 
 import (
 	"encoding"
