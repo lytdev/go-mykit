@@ -1,7 +1,9 @@
-package gxlsx
+package gexcel
 
 import (
 	"errors"
+	"fmt"
+	"github.com/lytdev/go-mykit/gmap2struct"
 	"reflect"
 	"strconv"
 	"time"
@@ -18,9 +20,7 @@ func NewExcelStructDefault() *ExcelStruct {
 	return n
 }
 
-// NewExcelStruct StartRow starts row, index starts from 0
-//StartRow 开始行,索引从 0开始
-//IndexMax  索引最大行,如果 结构体中的 index 大于配置的,那么使用结构体中的
+// NewExcelStruct /**StartRow开始行,索引从0开始;IndexMax索引最大行,如果结构体中的index大于配置的,那么使用结构体中的
 func NewExcelStruct(StartRow, IndexMax int, fastErr bool) *ExcelStruct {
 	n := new(ExcelStruct)
 	n.StartRow = StartRow
@@ -29,8 +29,36 @@ func NewExcelStruct(StartRow, IndexMax int, fastErr bool) *ExcelStruct {
 	return n
 }
 
-// WriteFile /** 将二维数组数据写入到excel的sheet
-func WriteFile[T any](n string, dataList []T) (*excelize.File, error) {
+// ReadFileToList /*读取本地文件
+func ReadFileToList[T any](filePath string, sheetIndex int, ptr T) (resultData []T, err error) {
+	xlsx, err := excelize.OpenFile(filePath)
+	if err != nil {
+		fmt.Println("文件读取异常:" + err.Error())
+		return nil, err
+	}
+	sheetName := xlsx.GetSheetName(sheetIndex)
+	rows, err := xlsx.GetRows(sheetName)
+	if err != nil {
+		fmt.Println("获取行数据异常:" + err.Error())
+		return nil, err
+	}
+	err = NewExcelStructDefault().SetPointerStruct(&ptr).RowsAllProcess(rows, func(maps map[string]interface{}) error {
+		// map转结构体
+		if mapErr := gmap2struct.Decode(maps, &ptr); mapErr != nil {
+			return mapErr
+		}
+		resultData = append(resultData, ptr)
+		return nil
+	})
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	return resultData, nil
+}
+
+// WriteToFile /** 将二维数组数据写入到excel的sheet
+func WriteToFile[T any](n string, dataList []T) (*excelize.File, error) {
 	if len(n) == 0 {
 		n = "Sheet1"
 	}

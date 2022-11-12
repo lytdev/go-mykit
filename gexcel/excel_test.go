@@ -1,4 +1,4 @@
-package gxlsx
+package gexcel
 
 import (
 	"fmt"
@@ -56,6 +56,22 @@ func TestRead(t *testing.T) {
 	}
 }
 
+//测试直接读取本地文件
+func TestReadLocalFile(t *testing.T) {
+	filePath := "../_doc/图书列表.xlsx"
+	var ptr ExcelTest
+	dataList, err := ReadFileToList(filePath, 0, ptr)
+	if err != nil {
+		t.Error(err)
+		os.Exit(1)
+	}
+	for _, data := range dataList {
+		fmt.Println(data)
+		t.Log(data)
+	}
+}
+
+//测试写入至本都文件
 func TestWriteFile(t *testing.T) {
 	pubDate, err := time.ParseInLocation(DatePattern, "2021-12-01", time.Local)
 	if err != nil {
@@ -90,7 +106,7 @@ func TestWriteFile(t *testing.T) {
 		MajorType: "计算机类",
 		SubMajor:  "三维设计"})
 	sheetName := "Sheet1"
-	f, err := WriteFile(sheetName, dataList)
+	f, err := WriteToFile(sheetName, dataList)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

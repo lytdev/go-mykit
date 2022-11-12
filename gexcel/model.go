@@ -1,4 +1,4 @@
-package gxlsx
+package gexcel
 
 import (
 	"errors"
