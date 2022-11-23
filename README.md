@@ -6,9 +6,9 @@
 
 ### 支持excel的读取和写入
 
-- `gexcel.ReadFileToList`读取本地excel文件至切片
+- `gexcel.ReadFileToList(filePath, 0, ptr)(resultData []T, err error)`读取本地excel文件至切片
 - `gexcel.ReadFileStreamToList`读取excel文件流至切片
-- `gexcel.WriteToFile`写入片切数据至excelize.File对象
+- `gexcel.WriteToFile(sheetName, dataList)(f *excelize.File,err error)`写入片切数据至excelize.File对象
 
 ### 日期格式化
 

@@ -7,6 +7,7 @@
 *.log
 logs/
 .idea/
+testdata/
 # Test binary, built with `go test -c`
 *.test
 *.iml
