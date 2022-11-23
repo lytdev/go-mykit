@@ -250,6 +250,7 @@ func loadDb(dbPath string) (parts []*part, err error) {
 	return parts, nil
 }
 
+// downloadPartToFile 下载分片至本地文件
 func downloadPartToFile(params *invokeParams) (int64, error) {
 	fs, err := os.Create(params.dst)
 	defer fs.Close()
@@ -259,6 +260,7 @@ func downloadPartToFile(params *invokeParams) (int64, error) {
 	return downloadPartToWriter(fs, params)
 }
 
+// downloadPartToWriter 下载分片文件至流
 func downloadPartToWriter(writer io.WriterAt, params *invokeParams) (int64, error) {
 	var err error
 	select {
