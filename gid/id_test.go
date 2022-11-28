@@ -5,6 +5,7 @@ import (
 	"testing"
 )
 
+// https://github.com/satori/go.uuid/blob/master/generator_test.go
 func TestUuid(t *testing.T) {
 	t.Log("uuid1:" + Uuid1())
 	t.Log("uuid2:" + Uuid2())
