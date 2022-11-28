@@ -40,13 +40,13 @@ func getTimeDefault() time.Time {
 }
 
 // Time2StrAsFormat 按照指定的格式输出时间
-func Time2StrAsFormat(t time.Time, timeFormat string) string {
+func TimeToStrAsFormat(t time.Time, timeFormat string) string {
 	// 先将输入的时间转换到指定的时区，然后再转换格式
 	return t.In(TIME_LOCATION).Format(timeFormat)
 }
 
-// TimeStr2Time 时间字符串转时间
-func TimeStr2Time(timeStr string) (time.Time, error) {
+// TimeStrToTime 时间字符串转时间
+func TimeStrToTime(timeStr string) (time.Time, error) {
 	// 可能的转换格式
 	useFormat := []string{
 		MYNano, MYMicro, MYMil, MYSec, MYCST, MYUTC, MYDate, MYTime, FBTIME, APPTIME, TWITTERTIME,
@@ -70,57 +70,57 @@ func TimeStr2Time(timeStr string) (time.Time, error) {
 
 ///////////////////////时间的时区转换//////////////////////
 
-// Time2UTC 本地时区时间与UTC时区时间转换
-func Time2UTC(t time.Time) time.Time {
+// TimeToUTC 本地时区时间与UTC时区时间转换
+func TimeToUTC(t time.Time) time.Time {
 	// 时间转换成 UTC时区的时间
 	return t.UTC()
 }
 
-// Time2Local 转成本地时区时间
-func Time2Local(t time.Time) time.Time {
+// Time2ToLocal 转成本地时区时间
+func Time2ToLocal(t time.Time) time.Time {
 	return t.Local()
 }
 
 //////////////////时间戳与时间的相关转换/////////////////////////
 
-// Time2TimeStampSecond 时间转秒级别时间戳
-func Time2TimeStampSecond(t time.Time) int64 {
+// TimeToTimeStampSecond 时间转秒级别时间戳
+func TimeToTimeStampSecond(t time.Time) int64 {
 	return t.Unix()
 }
 
-// Time2TimeStampNano 时间转纳秒级别时间戳
-func Time2TimeStampNano(t time.Time) int64 {
+// TimeToTimeStampNano 时间转纳秒级别时间戳
+func TimeToTimeStampNano(t time.Time) int64 {
 	return t.UnixNano()
 }
 
-// Time2TimeStampMill 时间转毫秒级别时间戳
-func Time2TimeStampMill(t time.Time) int64 {
+// TimeToTimeStampMill 时间转毫秒级别时间戳
+func TimeToTimeStampMill(t time.Time) int64 {
 	return t.UnixNano() / 1e6
 }
 
-// Timestamp2Time 时间戳转时间
-func Timestamp2Time(stamp int64, nsec int64) time.Time {
+// timestampToTime 时间戳转时间
+func timestampToTime(stamp int64, nsec int64) time.Time {
 	return time.Unix(stamp, nsec)
 }
 
-// TimestampNano2Time 纳秒时间戳转时间
-func TimestampNano2Time(stamp int64) time.Time {
-	return Timestamp2Time(0, stamp)
+// TimestampNanoToTime 纳秒时间戳转时间
+func TimestampNanoToTime(stamp int64) time.Time {
+	return timestampToTime(0, stamp)
 }
 
-// TimestampMil2Time 毫秒时间戳转时间(毫秒 *1e6 先转成纳秒)
-func TimestampMil2Time(stamp int64) time.Time {
-	return Timestamp2Time(0, stamp*1e6)
+// TimestampMilToTime 毫秒时间戳转时间(毫秒 *1e6 先转成纳秒)
+func TimestampMilToTime(stamp int64) time.Time {
+	return timestampToTime(0, stamp*1e6)
 }
 
-// TimestampSec2Time 秒级别时间戳转时间
-func TimestampSec2Time(stamp int64) time.Time {
-	return Timestamp2Time(stamp, 0)
+// TimestampSecToTime 秒级别时间戳转时间
+func TimestampSecToTime(stamp int64) time.Time {
+	return timestampToTime(stamp, 0)
 }
 
-// TimeStr2TimestampMill 字符串转毫秒时间戳
-func TimeStr2TimestampMill(timeStr string) (int64, error) {
-	t, err := TimeStr2Time(timeStr)
+// TimeStrToTimestampMill 字符串转毫秒时间戳
+func TimeStrToTimestampMill(timeStr string) (int64, error) {
+	t, err := TimeStrToTime(timeStr)
 	if err != nil {
 		return -1., err
 	}
@@ -140,7 +140,7 @@ func NumberToDate(number int) time.Time {
 }
 
 // StringToDate 时间字符串的格式必须是："20210222"
-func StringToDate(s string) (time.Time, error) {
+func NumStrToDate(s string) (time.Time, error) {
 	timeRet, err := time.ParseInLocation(TimeActivitiesLayout, s, TIME_LOCATION)
 	if err != nil {
 		return timeRet, err
