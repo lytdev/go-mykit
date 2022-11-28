@@ -1,4 +1,4 @@
-package hprogress
+package gdownload
 
 import (
 	"io"
