@@ -73,6 +73,7 @@ type FileReader interface {
 
 // Download 进行文件下载
 func (d *Instance) Download(ctx context.Context, dst string, reader FileReader, listener hprogress.ProgressListener) (err error) {
+	defer ants.Release()
 	//将下载任务放入线程池
 	pool, _ = ants.NewPoolWithFunc(d.Workers, func(i interface{}) {
 		params := i.(*invokeParams)
