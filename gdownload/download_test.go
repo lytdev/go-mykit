@@ -3,7 +3,6 @@ package gdownload
 import (
 	"context"
 	"fmt"
-	"github.com/lytdev/go-mykit/helpers/progress"
 	"testing"
 	"time"
 )
@@ -11,7 +10,7 @@ import (
 type Listener struct {
 }
 
-func (l Listener) ProgressChanged(event *hprogress.ProgressEvent) {
+func (l Listener) ProgressChanged(event *ProgressEvent) {
 	fmt.Println(event)
 }
 
