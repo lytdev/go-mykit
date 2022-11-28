@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/lytdev/go-mykit/helpers/os"
-	"github.com/lytdev/go-mykit/helpers/progress"
-	"github.com/panjf2000/ants"
 	"io"
 	"math"
 	"os"
 	"path/filepath"
+
+	hos "github.com/lytdev/go-mykit/helpers/os"
+	hprogress "github.com/lytdev/go-mykit/helpers/progress"
+	"github.com/panjf2000/ants/v2"
 )
 
 var pool *ants.PoolWithFunc

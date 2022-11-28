@@ -6,12 +6,13 @@ require (
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.6+incompatible
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/h2non/filetype v1.1.3
-	github.com/panjf2000/ants v1.3.0
 	github.com/xuri/excelize/v2 v2.6.1
 )
 
+require github.com/panjf2000/ants/v2 v2.6.0 // indirect
+
 require (
-	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
+	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirectndirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 // indirect
