@@ -12,7 +12,7 @@
 
 ### 日期格式化
 
-- `gfrmt.GetFormatDateStr`常见的日期字符串格式转time
+- `gtime.GetFormatDateStr`常见的日期字符串格式转time
 
 ### 对象转换
 

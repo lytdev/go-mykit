@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/lytdev/go-mykit/gconv"
-	"github.com/lytdev/go-mykit/gfrmt"
+	"github.com/lytdev/go-mykit/gtime"
 )
 
 const (
@@ -192,7 +192,7 @@ func (c *ExcelStruct) row2Map(row []string) (map[string]interface{}, error) {
 			//时间
 			if fields.FieldType == "time.Time" && len(colCell) > 0 {
 				//colCell的日志在excel可能存在多种形式,这里统一转换为yyyy-MM-DD的形式
-				dateStr, formatErr := gfrmt.GetFormatDateStr(colCell)
+				dateStr, formatErr := gtime.GetFormatDateStr(colCell)
 				if formatErr != nil {
 					//类型转换时候,产生错误时是否直接提示报错
 					if c.ConvertTypeErr {
