@@ -3,7 +3,6 @@ module github.com/lytdev/go-mykit
 go 1.18
 
 require (
-	github.com/aliyun/aliyun-oss-go-sdk v2.2.6+incompatible
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/h2non/filetype v1.1.3
 	github.com/panjf2000/ants v1.3.0
