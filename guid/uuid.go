@@ -1,4 +1,4 @@
-package gid
+package guid
 
 import (
 	"crypto/md5"
