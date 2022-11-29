@@ -12,7 +12,13 @@
 
 ### 日期格式化
 
-- `gfrmt.GetFormatDateStr`常见的日期字符串格式转time
+> 以下为常用的函数
+
+- `gtime.GetFormatDateStr`常见的日期字符串格式转time
+- `gtime.GetCurrentTime` 获取当前时间
+- `gtime.TimeToStrAsFormat` 获取时间字符串
+- `gtime.TimeToTimeStampMill` 时间转毫秒级别时间戳
+- `gtime.TimestampSecToTime` 秒级别时间戳转时间
 
 ### 对象转换
 

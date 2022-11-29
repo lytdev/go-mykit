@@ -1,4 +1,4 @@
-package gfrmt
+package gtime
 
 import (
 	"regexp"

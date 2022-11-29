@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/lytdev/go-mykit/helpers/os"
-	"github.com/lytdev/go-mykit/helpers/progress"
-	"github.com/panjf2000/ants"
 	"io"
 	"math"
 	"os"
 	"path/filepath"
+
+	hos "github.com/lytdev/go-mykit/helpers/os"
+	"github.com/panjf2000/ants/v2"
 )
 
 var pool *ants.PoolWithFunc
@@ -60,7 +60,7 @@ type invokeParams struct {
 	buf       []byte
 	dst       string
 	part      *part
-	listener  hprogress.ProgressListener
+	listener  ProgressListener
 	fileSize  int64
 	reader    FileReader
 }
@@ -71,7 +71,8 @@ type FileReader interface {
 }
 
 // Download 进行文件下载
-func (d *Instance) Download(ctx context.Context, dst string, reader FileReader, listener hprogress.ProgressListener) (err error) {
+func (d *Instance) Download(ctx context.Context, dst string, reader FileReader, listener ProgressListener) (err error) {
+	defer ants.Release()
 	//将下载任务放入线程池
 	pool, _ = ants.NewPoolWithFunc(d.Workers, func(i interface{}) {
 		params := i.(*invokeParams)
@@ -102,11 +103,11 @@ func (d *Instance) Download(ctx context.Context, dst string, reader FileReader, 
 	//已经完成的分片
 	completed := make(chan *part, partCount)
 	failed := make(chan error)
-	listener.ProgressChanged(&hprogress.ProgressEvent{
+	listener.ProgressChanged(&ProgressEvent{
 		ConsumedBytes: 0,
 		TotalBytes:    fileSize,
 		RwBytes:       0,
-		EventType:     hprogress.TransferStartedEvent,
+		EventType:     TransferStartedEvent,
 	})
 	for _, part := range partInfoArr {
 		if !part.isCompleted {
@@ -137,11 +138,11 @@ func (d *Instance) Download(ctx context.Context, dst string, reader FileReader, 
 			}
 			os.WriteFile(db, marshal, os.ModePerm)
 			wm += rp.size
-			listener.ProgressChanged(&hprogress.ProgressEvent{
+			listener.ProgressChanged(&ProgressEvent{
 				ConsumedBytes: wm,
 				TotalBytes:    fileSize,
 				RwBytes:       wm,
-				EventType:     hprogress.TransferDataEvent,
+				EventType:     TransferDataEvent,
 			})
 		case err = <-failed:
 			return err
@@ -166,7 +167,7 @@ func dbPath(dst string) string {
 }
 
 // merge 分片文件的合并
-func merge(dst string, parts []*part, fileSize int64, listener hprogress.ProgressListener) error {
+func merge(dst string, parts []*part, fileSize int64, listener ProgressListener) error {
 	dstDir := filepath.Dir(dst)
 	dstBase := filepath.Base(dst)
 	newFilename, err := hos.NewFilename(dst, 10, nil)
@@ -197,11 +198,11 @@ func merge(dst string, parts []*part, fileSize int64, listener hprogress.Progres
 	for i := 0; i < len(parts); i++ {
 		os.Remove(dpPath(i, dst))
 	}
-	listener.ProgressChanged(&hprogress.ProgressEvent{
+	listener.ProgressChanged(&ProgressEvent{
 		ConsumedBytes: fileSize,
 		TotalBytes:    fileSize,
 		RwBytes:       fileSize,
-		EventType:     hprogress.TransferCompletedEvent,
+		EventType:     TransferCompletedEvent,
 	})
 	return nil
 }
