@@ -1,7 +1,8 @@
 package gstr
 
 import (
-	"crypto/rand"
+	"errors"
+	"regexp"
 	"strings"
 	"unsafe"
 )
@@ -26,37 +27,22 @@ func IsEmpty(val string) bool {
 	return len(s) == 0
 }
 
-const (
-	LettersLetter          = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	LettersUpperCaseLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	LettersNumber          = "0123456789"
-	LettersNumberNoZero    = "23456789"
-	LettersSymbol          = "~`!@#$%^&*()_-+={[}]|\\:;\"'<,>.?/"
-)
-
-// RandString 随机字符串
-func RandString(n int, letters ...string) (string, error) {
-
-	lettersDefaultValue := LettersLetter + LettersNumber + LettersSymbol
-
-	if len(letters) > 0 {
-		lettersDefaultValue = ""
-		for _, letter := range letters {
-			lettersDefaultValue = lettersDefaultValue + letter
-		}
+// ReplaceAll 将给定的所有字符统一替换成指定的字符
+func ReplaceAll(old string, target string, srcTag ...string) (string, error) {
+	var builder strings.Builder
+	builder.WriteString("[")
+	for _, tag := range srcTag {
+		builder.WriteString(tag)
 	}
+	builder.WriteString("]")
+	return ReplaceStringByRegex(old, builder.String(), target)
+}
 
-	bytes := make([]byte, n)
-
-	_, err := rand.Read(bytes)
-
-	if err != nil {
-		return "", err
+// ReplaceStringByRegex 通过正则表达式把字符串替换掉
+func ReplaceStringByRegex(src, rule, target string) (string, error) {
+	reg, err := regexp.Compile(rule)
+	if reg == nil || err != nil {
+		return "", errors.New("正则表达式编译错误:" + err.Error())
 	}
-
-	for i, b := range bytes {
-		bytes[i] = lettersDefaultValue[b%byte(len(lettersDefaultValue))]
-	}
-
-	return string(bytes), nil
+	return reg.ReplaceAllString(src, target), nil
 }

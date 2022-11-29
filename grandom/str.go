@@ -28,3 +28,38 @@ func RandomString(length int) string {
 	}
 	return strings.Join(result, "")
 }
+
+const (
+	LettersLetter          = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	LettersUpperCaseLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	LettersNumber          = "0123456789"
+	LettersNumberNoZero    = "23456789"
+	LettersSymbol          = "~`!@#$%^&*()_-+={[}]|\\:;\"'<,>.?/"
+)
+
+// RandString 随机字符串
+func RandString(n int, letters ...string) (string, error) {
+
+	lettersDefaultValue := LettersLetter + LettersNumber + LettersSymbol
+
+	if len(letters) > 0 {
+		lettersDefaultValue = ""
+		for _, letter := range letters {
+			lettersDefaultValue = lettersDefaultValue + letter
+		}
+	}
+
+	bytes := make([]byte, n)
+
+	_, err := rand.Read(bytes)
+
+	if err != nil {
+		return "", err
+	}
+
+	for i, b := range bytes {
+		bytes[i] = lettersDefaultValue[b%byte(len(lettersDefaultValue))]
+	}
+
+	return string(bytes), nil
+}
