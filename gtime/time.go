@@ -19,11 +19,11 @@ const (
 	TWITTERTIME = "2006-01-02T15:04:05Z"
 )
 
-var TIME_LOCATION *time.Location
+var TimeLocation *time.Location
 
 func init() {
 	var err error
-	TIME_LOCATION, err = time.LoadLocation("Asia/Shanghai")
+	TimeLocation, err = time.LoadLocation("Asia/Shanghai")
 	if err != nil {
 		panic(err)
 	}
@@ -31,18 +31,18 @@ func init() {
 
 // GetCurrentTime 当前时区的当前时间
 func GetCurrentTime() time.Time {
-	return time.Now().In(TIME_LOCATION)
+	return time.Now().In(TimeLocation)
 }
 
 func getTimeDefault() time.Time {
-	t, _ := time.ParseInLocation(MYSec, "", TIME_LOCATION)
+	t, _ := time.ParseInLocation(MYSec, "", TimeLocation)
 	return t
 }
 
-// Time2StrAsFormat 按照指定的格式输出时间
+// TimeToStrAsFormat 按照指定的格式输出时间
 func TimeToStrAsFormat(t time.Time, timeFormat string) string {
 	// 先将输入的时间转换到指定的时区，然后再转换格式
-	return t.In(TIME_LOCATION).Format(timeFormat)
+	return t.In(TimeLocation).Format(timeFormat)
 }
 
 // TimeStrToTime 时间字符串转时间
@@ -55,7 +55,7 @@ func TimeStrToTime(timeStr string) (time.Time, error) {
 	}
 	var t time.Time
 	for _, useF := range useFormat {
-		tt, err1 := time.ParseInLocation(useF, timeStr, TIME_LOCATION)
+		tt, err1 := time.ParseInLocation(useF, timeStr, TimeLocation)
 		if err1 != nil {
 			continue
 		}
@@ -129,6 +129,7 @@ func TimeStrToTimestampMill(timeStr string) (int64, error) {
 }
 
 // ////////////////////////////////////////////////////////////
+
 const TimeActivitiesLayout = "20060102"
 
 // NumberToDate 时间数字int必须是：20210222
@@ -136,14 +137,28 @@ func NumberToDate(number int) time.Time {
 	var year = number / 10000
 	var month = number % 10000 / 100
 	var day = number % 100
-	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, TIME_LOCATION)
+	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, TimeLocation)
 }
 
-// StringToDate 时间字符串的格式必须是："20210222"
+// NumStrToDate 时间字符串的格式必须是："20210222"
 func NumStrToDate(s string) (time.Time, error) {
-	timeRet, err := time.ParseInLocation(TimeActivitiesLayout, s, TIME_LOCATION)
+	timeRet, err := time.ParseInLocation(TimeActivitiesLayout, s, TimeLocation)
 	if err != nil {
 		return timeRet, err
 	}
 	return timeRet, nil
+}
+
+// GetDayBeginMoment 获取日期的最早时刻
+func GetDayBeginMoment(t time.Time) time.Time {
+	y, m, d := t.Date()
+	n := time.Date(y, m, d, 0, 0, 0, 0, time.Local)
+	return n
+}
+
+// GetDayEndMoment 获取日期的最晚时刻
+func GetDayEndMoment(t time.Time) time.Time {
+	y, m, d := t.Date()
+	n := time.Date(y, m, d, 23, 59, 59, 999999999, time.Local)
+	return n
 }
