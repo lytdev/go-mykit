@@ -7,6 +7,7 @@ import (
 	"unsafe"
 )
 
+// https://pkg.go.dev/strings
 //string与[]byte的直接转换是通过底层数据copy实现的,存在性能损耗,不过一般不影响
 
 // StrToByteArr 字符串转字节数组
@@ -45,4 +46,19 @@ func ReplaceStringByRegex(src, rule, target string) (string, error) {
 		return "", errors.New("正则表达式编译错误:" + err.Error())
 	}
 	return reg.ReplaceAllString(src, target), nil
+}
+
+// SplitIgnoreBlank 切分字符串,忽略空内容
+func SplitIgnoreBlank(s, sep string) []string {
+	if s == "" || len(s) == 0 {
+		return []string{}
+	}
+	result := make([]string, 0)
+	split := strings.Split(s, sep)
+	for _, str := range split {
+		if str != "" && len(str) > 0 {
+			result = append(result, str)
+		}
+	}
+	return result
 }
