@@ -1,4 +1,4 @@
-package gmap2struct
+package gstruct
 
 import (
 	"encoding"

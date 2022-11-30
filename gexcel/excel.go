@@ -3,7 +3,7 @@ package gexcel
 import (
 	"errors"
 	"fmt"
-	"github.com/lytdev/go-mykit/gmap2struct"
+	"github.com/lytdev/go-mykit/gstruct"
 	"io"
 	"reflect"
 	"strconv"
@@ -90,7 +90,7 @@ func readCore[T any](xlsx *excelize.File, sheetIndex int, ptr T) (resultData []T
 	}
 	err = NewExcelStructDefault().SetPointerStruct(&ptr).RowsAllProcess(rows, func(maps map[string]interface{}) error {
 		// map转结构体
-		if mapErr := gmap2struct.Decode(maps, &ptr); mapErr != nil {
+		if mapErr := gstruct.Decode(maps, &ptr); mapErr != nil {
 			return mapErr
 		}
 		resultData = append(resultData, ptr)
