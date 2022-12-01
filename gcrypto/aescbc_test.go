@@ -6,10 +6,10 @@ import (
 )
 
 var (
-	plaintext = "飞流直下三千尺，疑似银河落九天。"
+	plaintext = "日照香炉生紫烟，遥看瀑布挂前川。飞流直下三千尺，疑是银河落九天。"
 	key       = "111"
 	key16     = "FgTyct3gH9QfWnTh"
-	aesBadiv  = "FgTyct3gH9QfWn"
+	aesBadiv  = "123654"
 	aesGoodiv = "FgTyct3gH9QfWnTh"
 	key24     = "c7ANgV8z67VcPmxXfYjZxqEN"
 	key32     = "VddYB8XGvvGSGfuUcDHUvX3nnMEKCh49"
