@@ -14,6 +14,7 @@ type EccKey struct {
 	PublicKey  string
 }
 
+// GenerateEccKeyHex 生成ECC的私钥和公钥的Hex形式
 func GenerateEccKeyHex() (EccKey, error) {
 	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
@@ -34,6 +35,7 @@ func GenerateEccKeyHex() (EccKey, error) {
 	}, nil
 }
 
+// GenerateEccKeyBase64 生成ECC的私钥和公钥的base64形式
 func GenerateEccKeyBase64() (EccKey, error) {
 	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {

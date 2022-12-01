@@ -1,107 +1,82 @@
 package gcrypto
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 var (
-	msg          = "床前明月光，疑是地上霜，举头望明月，低头思故乡"
-	base64PubKey = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAElJ+LbZBekYTu/Md4T/j3DJsmJFf/3wLLmfUR7sLXCzS1PsDpHIC0QXRdVVdzS9BmP5GdtpesR4Oeh7g0TBBoLA=="
-	base64PriKey = "MHcCAQEEIKPH4RlH9IQYwalxykgwlZkV9JjxQW2mHM+oGp4dxkMGoAoGCCqGSM49AwEHoUQDQgAElJ+LbZBekYTu/Md4T/j3DJsmJFf/3wLLmfUR7sLXCzS1PsDpHIC0QXRdVVdzS9BmP5GdtpesR4Oeh7g0TBBoLA=="
+	eccMsg          = "床前明月光，疑是地上霜，举头望明月，低头思故乡"
+	eccBase64PubKey = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAElJ+LbZBekYTu/Md4T/j3DJsmJFf/3wLLmfUR7sLXCzS1PsDpHIC0QXRdVVdzS9BmP5GdtpesR4Oeh7g0TBBoLA=="
+	eccBase64PriKey = "MHcCAQEEIKPH4RlH9IQYwalxykgwlZkV9JjxQW2mHM+oGp4dxkMGoAoGCCqGSM49AwEHoUQDQgAElJ+LbZBekYTu/Md4T/j3DJsmJFf/3wLLmfUR7sLXCzS1PsDpHIC0QXRdVVdzS9BmP5GdtpesR4Oeh7g0TBBoLA=="
 
-	hexPubKey = "3059301306072a8648ce3d020106082a8648ce3d030107034200043d39b48322518e8c6053ff63ef0426537fb1d5e16d128802c4c54104d61f84605b6bfa3266cc7f38968c0174d672e3690e50a93c819589f6d0f6bb44a57bcee8"
-	hexPriKey = "30770201010420af9497e1c61ffe6019592a25f22a12e079e87d935b01bd2dc6d817744053a849a00a06082a8648ce3d030107a144034200043d39b48322518e8c6053ff63ef0426537fb1d5e16d128802c4c54104d61f84605b6bfa3266cc7f38968c0174d672e3690e50a93c819589f6d0f6bb44a57bcee8"
+	eccHexPubKey = "3059301306072a8648ce3d020106082a8648ce3d030107034200043d39b48322518e8c6053ff63ef0426537fb1d5e16d128802c4c54104d61f84605b6bfa3266cc7f38968c0174d672e3690e50a93c819589f6d0f6bb44a57bcee8"
+	eccHexPriKey = "30770201010420af9497e1c61ffe6019592a25f22a12e079e87d935b01bd2dc6d817744053a849a00a06082a8648ce3d030107a144034200043d39b48322518e8c6053ff63ef0426537fb1d5e16d128802c4c54104d61f84605b6bfa3266cc7f38968c0174d672e3690e50a93c819589f6d0f6bb44a57bcee8"
 )
 
 func TestEccEncryptBase64(t *testing.T) {
+	//公钥加密,私钥解密
 	base64Key, err := GenerateEccKeyBase64()
-	assert.Nil(t, err)
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log("**************EccEncryptBase64*******************")
+	cipherText1, err := EccEncryptToBase64([]byte(eccMsg), eccBase64PubKey)
+	t.Log("公钥加密后(base64)：" + cipherText1)
+	plainText1, err := EccDecryptByBase64(cipherText1, eccBase64PriKey)
+	t.Log("base64加密串私钥解密后：" + string(plainText1))
+	t.Log("*************自动生成公钥和私钥加解密**************")
+	cipherText1, err = EccEncryptToBase64([]byte(eccMsg), base64Key.PublicKey)
+	t.Log("公钥加密后(base64)：" + cipherText1)
+	plainText1, err = EccDecryptByBase64(cipherText1, base64Key.PrivateKey)
+	t.Log("base64加密串私钥解密后：" + string(plainText1))
 
-	cipherText, err := EccEncryptToBase64([]byte(msg), base64PubKey)
-	assert.Nil(t, err)
-	_, err = EccEncryptToBase64([]byte(msg), base64PriKey)
-	assert.NotNil(t, err)
-	plainText, err := EccDecryptByBase64(cipherText, base64PriKey)
-	assert.Nil(t, err)
-	assert.Equal(t, msg, string(plainText))
-
-	cipherText, err = EccEncryptToBase64([]byte(msg), base64Key.PublicKey)
-	assert.Nil(t, err)
-	plainText, err = EccDecryptByBase64(cipherText, base64Key.PrivateKey)
-	assert.Nil(t, err)
-	assert.Equal(t, msg, string(plainText))
-	_, err = EccDecryptByBase64(cipherText, base64Key.PublicKey)
-	assert.NotNil(t, err)
-	_, err = EccDecryptByBase64("badText", base64Key.PrivateKey)
-	assert.NotNil(t, err)
-	_, err = EccDecryptByBase64(cipherText, "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAElJ")
-	assert.NotNil(t, err)
-
-}
-
-func TestEccEncryptHex(t *testing.T) {
+	t.Log("**************EccEncryptHex*******************")
 	hexKey, err := GenerateEccKeyHex()
-	assert.Nil(t, err)
-
-	cipherText, err := EccEncryptToHex([]byte(msg), hexPubKey)
-	assert.Nil(t, err)
-	_, err = EccEncryptToHex([]byte(msg), hexPriKey)
-	assert.NotNil(t, err)
-	plainText, err := EccDecryptByHex(cipherText, hexPriKey)
-	assert.Nil(t, err)
-	assert.Equal(t, msg, string(plainText))
-
-	cipherText, err = EccEncryptToHex([]byte(msg), hexKey.PublicKey)
-	assert.Nil(t, err)
-	plainText, err = EccDecryptByHex(cipherText, hexKey.PrivateKey)
-	assert.Nil(t, err)
-	assert.Equal(t, msg, string(plainText))
-	_, err = EccDecryptByHex(cipherText, hexKey.PublicKey)
-	assert.NotNil(t, err)
-	_, err = EccDecryptByHex("badText", hexKey.PrivateKey)
-	assert.NotNil(t, err)
-	_, err = EccDecryptByHex(cipherText, "3059301306072a8648ce3d020106082a8648ce3d03")
-	assert.NotNil(t, err)
-
+	if err != nil {
+		t.Error(err)
+	}
+	cipherText2, err := EccEncryptToHex([]byte(eccMsg), eccHexPubKey)
+	t.Log("公钥加密后(Hex)：" + cipherText1)
+	plainText2, err := EccDecryptByHex(cipherText2, eccHexPriKey)
+	t.Log("Hex加密串私钥解密后：" + string(plainText2))
+	t.Log("************自动生成公钥和私钥加解密************")
+	cipherText2, err = EccEncryptToHex([]byte(eccMsg), hexKey.PublicKey)
+	t.Log("公钥加密后(Hex)：" + cipherText2)
+	plainText1, err = EccDecryptByHex(cipherText2, hexKey.PrivateKey)
+	t.Log("Hex加密串私钥解密后：" + string(plainText2))
 }
 
 func TestEccSignBase64(t *testing.T) {
+	//私钥签名,公钥验签
 	base64Key, err := GenerateEccKeyBase64()
-	assert.Nil(t, err)
+	if err != nil {
+		t.Error(err)
+	}
+	rText1, sText1, err := EccSignBase64([]byte(eccMsg), base64Key.PrivateKey)
+	rText2, sText2, err := EccSignBase64([]byte(eccMsg), eccBase64PriKey)
+	t.Logf("自动私钥签名base64: \r\n rSign:%s \r\n sSign:%s", rText1, sText1)
+	t.Logf("手动私钥签名base64: \r\n rSign:%s \r\n sSign:%s", rText2, sText2)
+	res1 := EccVerifySignBase64([]byte(eccMsg), rText1, sText1, base64Key.PublicKey)
+	t.Logf("自动私钥base64验签结果：%v ", res1)
 
-	rText, sText, err := EccSignBase64([]byte(msg), base64Key.PrivateKey)
-	assert.Nil(t, err)
-	_, _, err = EccSignBase64([]byte(msg), base64Key.PublicKey)
-	assert.NotNil(t, err)
-	_, _, err = EccSignBase64([]byte(msg), base64PubKey)
-	assert.NotNil(t, err)
+	res2 := EccVerifySignBase64([]byte(eccMsg), rText2, sText2, eccBase64PubKey)
+	t.Logf("自动私钥base64验签结果：%v ", res2)
 
-	res := EccVerifySignBase64([]byte(msg), rText, sText, base64Key.PublicKey)
-	assert.Equal(t, res, true)
-
-	res = EccVerifySignBase64([]byte(msg), rText, sText, base64Key.PrivateKey)
-	assert.Equal(t, res, false)
-	res = EccVerifySignBase64([]byte(msg), sText, rText, base64Key.PrivateKey)
-	assert.Equal(t, res, false)
 }
 
 func TestEccSignHex(t *testing.T) {
-	hexKey, err := GenerateEccKeyHex()
-	assert.Nil(t, err)
+	//私钥签名,公钥验签
+	hex64Key, err := GenerateEccKeyHex()
+	if err != nil {
+		t.Error(err)
+	}
+	rText1, sText1, err := EccSignHex([]byte(eccMsg), hex64Key.PrivateKey)
+	rText2, sText2, err := EccSignHex([]byte(eccMsg), eccHexPriKey)
+	t.Logf("自动私钥签名hex: \r\n rSign:%s \r\n sSign:%s", rText1, sText1)
+	t.Logf("手动私钥签名hex: \r\n rSign:%s \r\n sSign:%s", rText2, sText2)
+	res1 := EccVerifySignHex([]byte(eccMsg), rText1, sText1, hex64Key.PublicKey)
+	t.Logf("自动私钥hex验签结果：%v ", res1)
 
-	rText, sText, err := EccSignHex([]byte(msg), hexKey.PrivateKey)
-	assert.Nil(t, err)
-	_, _, err = EccSignHex([]byte(msg), hexKey.PublicKey)
-	assert.NotNil(t, err)
-	_, _, err = EccSignHex([]byte(msg), hexPubKey)
-	assert.NotNil(t, err)
-
-	res := EccVerifySignHex([]byte(msg), rText, sText, hexKey.PublicKey)
-	assert.Equal(t, res, true)
-
-	res = EccVerifySignHex([]byte(msg), rText, sText, hexKey.PrivateKey)
-	assert.Equal(t, res, false)
-	res = EccVerifySignHex([]byte(msg), sText, rText, hexKey.PrivateKey)
-	assert.Equal(t, res, false)
+	res2 := EccVerifySignHex([]byte(eccMsg), rText2, sText2, eccHexPubKey)
+	t.Logf("自动私钥hex验签结果：%v ", res2)
 }
