@@ -28,8 +28,11 @@ type Hash128 interface {
 // digest128 represents a partial evaluation of a 128 bites hash.
 type digest128 struct {
 	digest
-	h1 uint64 // Unfinalized running hash part 1.
-	h2 uint64 // Unfinalized running hash part 2.
+	seed uint32
+	tail []byte
+	clen int
+	h1   uint64 // Unfinalized running hash part 1.
+	h2   uint64 // Unfinalized running hash part 2.
 }
 
 // New128 returns a 128-bit hasher
