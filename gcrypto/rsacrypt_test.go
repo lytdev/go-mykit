@@ -1,6 +1,7 @@
 package gcrypto
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -82,4 +83,204 @@ func TestRsaSign(t *testing.T) {
 	t.Logf("私钥1024签名(hex)：%s", hexSign1024)
 	res = RsaVerifySignHex([]byte(rsaMsg), hexSign1024, hexKey1024.PublicKey)
 	t.Logf("公钥1024验签hex结果：%v", res)
+}
+
+func TestRsaEncryptBase64(t *testing.T) {
+	base64Key1024, err := GenerateRsaKeyBase64(1024)
+	assert.Nil(t, err)
+	base64Key2048, err := GenerateRsaKeyBase64(2048)
+	assert.Nil(t, err)
+	_, err = GenerateRsaKeyBase64(204811)
+	assert.NotNil(t, err)
+
+	// good
+	base64CipherText, err := RsaEncryptToBase64([]byte(rsaMsg), base64Key1024.PublicKey)
+	assert.Nil(t, err)
+	// bad
+	_, err = RsaEncryptToBase64([]byte(rsaMsg), "badkey")
+	assert.NotNil(t, err)
+	_, err = RsaEncryptToBase64([]byte(rsaMsg), hexPubKey1024)
+	assert.NotNil(t, err)
+	// good
+	plainText, err := RsaDecryptByBase64(base64CipherText, base64Key1024.PrivateKey)
+	assert.Nil(t, err)
+	assert.Equal(t, string(plainText), rsaMsg)
+	// bad priKey
+	_, err = RsaDecryptByBase64(base64CipherText, "badPriKey")
+	assert.NotNil(t, err)
+	_, err = RsaDecryptByBase64(base64CipherText, base64Key2048.PublicKey)
+	assert.NotNil(t, err)
+	_, err = RsaDecryptByBase64(base64CipherText, base64Key2048.PrivateKey)
+	assert.NotNil(t, err)
+	_, err = RsaDecryptByBase64(base64CipherText, hexPriKey1024)
+	assert.NotNil(t, err)
+	_, err = RsaDecryptByBase64(base64CipherText, hexPriKey2048)
+	assert.NotNil(t, err)
+	_, err = RsaDecryptByBase64(base64CipherText, hexPubKey1024)
+	assert.NotNil(t, err)
+	_, err = RsaDecryptByBase64("badtext", base64Key1024.PrivateKey)
+	assert.NotNil(t, err)
+
+	// good
+	base64CipherText, err = RsaEncryptToBase64([]byte(rsaMsg), base64Key2048.PublicKey)
+	assert.Nil(t, err)
+	plainText, err = RsaDecryptByBase64(base64CipherText, base64Key2048.PrivateKey)
+	assert.Nil(t, err)
+	assert.Equal(t, string(plainText), rsaMsg)
+
+	// good
+	base64CipherText, err = RsaEncryptToBase64([]byte(rsaMsg), base64PubKey1024)
+	assert.Nil(t, err)
+	plainText, err = RsaDecryptByBase64(base64CipherText, base64PriKey1024)
+	assert.Nil(t, err)
+	assert.Equal(t, string(plainText), rsaMsg)
+
+	// good
+	base64CipherText, err = RsaEncryptToBase64([]byte(rsaMsg), base64PubKey2048)
+	assert.Nil(t, err)
+	plainText, err = RsaDecryptByBase64(base64CipherText, base64PriKey2048)
+	assert.Nil(t, err)
+	assert.Equal(t, string(plainText), rsaMsg)
+}
+
+func TestRsaEncryptHex(t *testing.T) {
+	hexKey1024, err := GenerateRsaKeyHex(1024)
+	assert.Nil(t, err)
+	hexKey2048, err := GenerateRsaKeyHex(2048)
+	assert.Nil(t, err)
+	_, err = GenerateRsaKeyHex(2048111)
+	assert.NotNil(t, err)
+
+	// good
+	hexCipherText, err := RsaEncryptToHex([]byte(rsaMsg), hexKey1024.PublicKey)
+	assert.Nil(t, err)
+	// bad
+	_, err = RsaEncryptToHex([]byte(rsaMsg), "badkey")
+	assert.NotNil(t, err)
+	// good
+	plainText, err := RsaDecryptByHex(hexCipherText, hexKey1024.PrivateKey)
+	assert.Nil(t, err)
+	assert.Equal(t, string(plainText), rsaMsg)
+	// bad
+	_, err = RsaDecryptByHex(hexCipherText, "badkey")
+	assert.NotNil(t, err)
+	// bad priKey
+	_, err = RsaDecryptByHex(hexCipherText, hexPriKey2048)
+	assert.NotNil(t, err)
+	_, err = RsaDecryptByHex(hexCipherText, hexPriKey1024)
+	assert.NotNil(t, err)
+	_, err = RsaDecryptByHex(hexCipherText, base64PriKey2048)
+	assert.NotNil(t, err)
+	_, err = RsaDecryptByHex(hexCipherText, base64PriKey1024)
+	assert.NotNil(t, err)
+	_, err = RsaDecryptByHex("ssss", hexKey1024.PrivateKey)
+	assert.NotNil(t, err)
+
+	// good
+	hexCipherText, err = RsaEncryptToHex([]byte(rsaMsg), hexKey2048.PublicKey)
+	assert.Nil(t, err)
+	plainText, err = RsaDecryptByHex(hexCipherText, hexKey2048.PrivateKey)
+	assert.Nil(t, err)
+	assert.Equal(t, string(plainText), rsaMsg)
+
+	// good
+	hexCipherText, err = RsaEncryptToHex([]byte(rsaMsg), hexPubKey1024)
+	assert.Nil(t, err)
+	plainText, err = RsaDecryptByHex(hexCipherText, hexPriKey1024)
+	assert.Nil(t, err)
+	assert.Equal(t, string(plainText), rsaMsg)
+
+	// good
+	hexCipherText, err = RsaEncryptToHex([]byte(rsaMsg), hexPubKey2048)
+	assert.Nil(t, err)
+	plainText, err = RsaDecryptByHex(hexCipherText, hexPriKey2048)
+	assert.Nil(t, err)
+	assert.Equal(t, string(plainText), rsaMsg)
+
+}
+
+func TestRsaSignBase64(t *testing.T) {
+	base64Key1024, err := GenerateRsaKeyBase64(1024)
+	assert.Nil(t, err)
+	base64Key2048, err := GenerateRsaKeyBase64(2048)
+	assert.Nil(t, err)
+	_, err = GenerateRsaKeyBase64(204811)
+	assert.NotNil(t, err)
+
+	base64Sign1024, err := RsaSignBase64([]byte(rsaMsg), base64Key1024.PrivateKey)
+	assert.Nil(t, err)
+	_, err = RsaSignBase64([]byte(rsaMsg), hexPriKey2048)
+	assert.NotNil(t, err)
+	res := RsaVerifySignBase64([]byte(rsaMsg), base64Sign1024, base64Key1024.PublicKey)
+	assert.Equal(t, res, true)
+	res = RsaVerifySignBase64([]byte(rsaMsg), base64Sign1024, base64Key2048.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySignBase64([]byte(rsaMsg), "11111", "badpubkey")
+	assert.Equal(t, res, false)
+	res = RsaVerifySignBase64([]byte(rsaMsg), "11111", base64Key1024.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySignBase64([]byte(rsaMsg), base64Sign1024, base64Key2048.PublicKey)
+	assert.Equal(t, res, false)
+
+	base64Sign2048, err := RsaSignBase64([]byte(rsaMsg), base64Key2048.PrivateKey)
+	assert.Nil(t, err)
+	res = RsaVerifySignBase64([]byte(rsaMsg), base64Sign2048, base64Key2048.PublicKey)
+	assert.Equal(t, res, true)
+	res = RsaVerifySignBase64([]byte(rsaMsg), base64Sign2048, base64Key1024.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySignBase64([]byte(rsaMsg), "11111", "badpubkey")
+	assert.Equal(t, res, false)
+	res = RsaVerifySignBase64([]byte(rsaMsg), base64Sign2048, base64Key1024.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySignBase64([]byte(rsaMsg), base64Sign2048, base64Key1024.PrivateKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySignBase64([]byte(rsaMsg), base64Sign2048, base64Key2048.PrivateKey)
+	assert.Equal(t, res, false)
+
+}
+
+func TestRsaSignHex(t *testing.T) {
+	hexKey1024, err := GenerateRsaKeyHex(1024)
+	assert.Nil(t, err)
+	hexKey2048, err := GenerateRsaKeyHex(2048)
+	assert.Nil(t, err)
+	_, err = GenerateRsaKeyHex(2048111)
+	assert.NotNil(t, err)
+
+	hexSign1024, err := RsaSignHex([]byte(rsaMsg), hexKey1024.PrivateKey)
+	assert.Nil(t, err)
+	_, err = RsaSignHex([]byte(rsaMsg), hexKey1024.PublicKey)
+	assert.NotNil(t, err)
+	res := RsaVerifySignHex([]byte(rsaMsg), hexSign1024, hexKey1024.PublicKey)
+	assert.Equal(t, res, true)
+	res = RsaVerifySignHex([]byte(rsaMsg), hexSign1024, hexKey2048.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySignHex([]byte(rsaMsg), "11111", "badpubkey")
+	assert.Equal(t, res, false)
+	res = RsaVerifySignHex([]byte(rsaMsg), "282010100db", hexKey1024.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySignHex([]byte(rsaMsg), hexSign1024, hexKey2048.PublicKey)
+	assert.Equal(t, res, false)
+
+	hexSign2048, err := RsaSignHex([]byte(rsaMsg), hexKey2048.PrivateKey)
+	assert.Nil(t, err)
+	_, err = RsaSignHex([]byte(rsaMsg), hexPubKey2048)
+	assert.NotNil(t, err)
+	res = RsaVerifySignHex([]byte(rsaMsg), hexSign2048, hexKey2048.PublicKey)
+	assert.Equal(t, res, true)
+	res = RsaVerifySignHex([]byte(rsaMsg), hexSign2048, hexKey1024.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySignHex([]byte(rsaMsg), "0a0282010100d", "badpubkey")
+	assert.Equal(t, res, false)
+	res = RsaVerifySignHex([]byte(rsaMsg), "0a0282010100d", hexKey1024.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySignHex([]byte(rsaMsg), "xxxx", "badpubkey")
+	assert.Equal(t, res, false)
+	res = RsaVerifySignHex([]byte(rsaMsg), hexSign2048, hexKey1024.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySignHex([]byte(rsaMsg), hexSign2048, hexKey1024.PrivateKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySignHex([]byte(rsaMsg), hexSign2048, hexKey2048.PrivateKey)
+	assert.Equal(t, res, false)
+
 }

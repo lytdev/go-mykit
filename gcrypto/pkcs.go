@@ -6,8 +6,8 @@ import (
 
 func ZeroPadding(ciphertext []byte, blockSize int) []byte {
 	padding := blockSize - len(ciphertext)%blockSize
-	padtext := bytes.Repeat([]byte{0}, padding)
-	return append(ciphertext, padtext...)
+	padText := bytes.Repeat([]byte{0}, padding)
+	return append(ciphertext, padText...)
 }
 
 func ZeroUnPadding(origData []byte) []byte {
@@ -16,29 +16,18 @@ func ZeroUnPadding(origData []byte) []byte {
 	})
 }
 
-func pkcs7Padding(ciphertext []byte, blockSize int) []byte {
-	//判断缺少几位长度。最少1，最多 blockSize
-	padding := blockSize - len(ciphertext)%blockSize
-	//补足位数。把切片[]byte{byte(padding)}复制padding个
+func PKCS5Padding(plainText []byte, blockSize int) []byte {
+	padding := blockSize - (len(plainText) % blockSize)
 	padText := bytes.Repeat([]byte{byte(padding)}, padding)
-	return append(ciphertext, padText...)
+	newText := append(plainText, padText...)
+	return newText
 }
 
-func pkcs7UnPadding(encrypt []byte) []byte {
-	length := len(encrypt)
-	//获取填充的个数
-	unPadding := int(encrypt[length-1])
-	return encrypt[:(length - unPadding)]
-}
-
-func PKCS5Padding(ciphertext []byte, blockSize int) []byte {
-	padding := blockSize - len(ciphertext)%blockSize
-	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
-	return append(ciphertext, padtext...)
-}
-
-func PKCS5UnPadding(origData []byte) []byte {
-	length := len(origData)
-	unpadding := int(origData[length-1])
-	return origData[:(length - unpadding)]
+func PKCS5UnPadding(plainText []byte, blockSize int) ([]byte, error) {
+	length := len(plainText)
+	number := int(plainText[length-1])
+	if number >= length || number > blockSize {
+		return nil, ErrPaddingSize
+	}
+	return plainText[:length-number], nil
 }

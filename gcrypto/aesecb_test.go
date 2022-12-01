@@ -1,8 +1,11 @@
 package gcrypto
 
-import "testing"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
-func TestAesEcb(t *testing.T) {
+func TestAesEcbEncryptAndDecrypt(t *testing.T) {
 	origData := []byte("飞流直下三千尺，疑似银河落九天。") // 待加密的数据
 	key := []byte("FgTyct3gH9QfWnTh")      // 加密的密钥
 	t.Log("密钥：", string(key))
@@ -38,4 +41,46 @@ func TestAesEcb(t *testing.T) {
 	// ****************进行ECB解密*****************
 	// base64解密结果： 飞流直下三千尺，疑似银河落九天。
 	// Hex解密结果： 飞流直下三千尺，疑似银河落九天。
+}
+
+func TestAesEcb(t *testing.T) {
+	var (
+		key       = "1234567812345678"
+		plaintext = "TestAesEcb"
+	)
+	cipherBytes, err := AesEcbEncrypt([]byte(plaintext), []byte(key))
+	assert.Nil(t, err)
+	text, err := AesEcbDecrypt(cipherBytes, []byte(key))
+	assert.Nil(t, err)
+	assert.Equal(t, string(text), plaintext)
+}
+
+func TestAesEcbEncryptBase64(t *testing.T) {
+	var (
+		key       = "1234567812345678"
+		plaintext = "TestAesEcb"
+	)
+	cipher, err := AesEcbEncryptBase64([]byte(plaintext), []byte(key))
+	assert.Nil(t, err)
+	text, err := AesEcbDecryptByBase64(cipher, []byte(key))
+	assert.Nil(t, err)
+	assert.Equal(t, string(text), plaintext)
+
+	_, err = AesEcbDecryptByBase64("11111", []byte(key))
+	assert.NotNil(t, err)
+}
+
+func TestAesEcbEncryptHex(t *testing.T) {
+	var (
+		key       = "1234567812345678"
+		plaintext = "TestAesEcb"
+	)
+	cipher, err := AesEcbEncryptHex([]byte(plaintext), []byte(key))
+	assert.Nil(t, err)
+	text, err := AesEcbDecryptByHex(cipher, []byte(key))
+	assert.Nil(t, err)
+	assert.Equal(t, string(text), plaintext)
+
+	_, err = AesEcbDecryptByHex("11111", []byte(key))
+	assert.NotNil(t, err)
 }

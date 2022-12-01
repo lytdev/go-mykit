@@ -5,7 +5,10 @@ import (
 	"crypto/cipher"
 	"encoding/base64"
 	"encoding/hex"
+	"github.com/lytdev/go-mykit/gnum"
 )
+
+// https://www.cnblogs.com/happyhippy/archive/2006/12/23/601353.html
 
 // aesEcb  不建议使用ECB模式,推荐使用CBC模式
 type aesEcb struct {
@@ -72,17 +75,21 @@ func (x *ecbDecrypter) CryptBlocks(dst, src []byte) {
 // @param cipherText 待加密的数据
 // @param secretKey 密钥
 func AesEcbEncrypt(plainText, secretKey []byte) ([]byte, error) {
-	if len(secretKey) != 16 && len(secretKey) != 24 && len(secretKey) != 32 {
+	if len(secretKey) != KeyLength16 && len(secretKey) != KeyLength24 && len(secretKey) != KeyLength32 {
 		return nil, ErrKeyLengthSixteen
 	}
+
 	block, err := aes.NewCipher(secretKey)
 	if err != nil {
 		return nil, err
 	}
-
-	paddingText := PKCS5Padding(plainText, block.BlockSize())
-
-	encrypted := make([]byte, len(paddingText))
+	bLen := block.BlockSize()
+	paddingText := PKCS5Padding(plainText, bLen)
+	ptLen := len(paddingText)
+	if !gnum.NumMulti(ptLen, bLen) {
+		return nil, ErrAesSrcBlockSize
+	}
+	encrypted := make([]byte, ptLen)
 	encrypter := newECBEncrypter(block)
 	encrypter.CryptBlocks(encrypted, paddingText)
 
@@ -93,19 +100,23 @@ func AesEcbEncrypt(plainText, secretKey []byte) ([]byte, error) {
 // @param cipherText 加密后的数据
 // @param secretKey 密钥
 func AesEcbDecrypt(plainText, secretKey []byte) ([]byte, error) {
-	if len(secretKey) != 16 && len(secretKey) != 24 && len(secretKey) != 32 {
+	if len(secretKey) != KeyLength16 && len(secretKey) != KeyLength24 && len(secretKey) != KeyLength32 {
 		return nil, ErrKeyLengthSixteen
 	}
+	ptLen := len(plainText)
 	block, err := aes.NewCipher(secretKey)
 	if err != nil {
 		return nil, err
 	}
+	if !gnum.NumMulti(ptLen, block.BlockSize()) {
+		return nil, ErrAesSrcBlockSize
+	}
 
 	decrypter := newECBDecrypter(block)
-	decrypted := make([]byte, len(plainText))
+	decrypted := make([]byte, ptLen)
 	decrypter.CryptBlocks(decrypted, plainText)
 
-	return PKCS5UnPadding(decrypted), nil
+	return PKCS5UnPadding(decrypted, decrypter.BlockSize())
 }
 
 func AesEcbEncryptBase64(plainText, key []byte) (string, error) {
