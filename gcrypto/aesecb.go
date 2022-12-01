@@ -68,8 +68,8 @@ func (x *ecbDecrypter) CryptBlocks(dst, src []byte) {
 	}
 }
 
-// AesEcbEncrypt
-// @param cipherText 加密后的数据
+// AesEcbEncrypt AES ECB式的加密,NoPadding
+// @param cipherText 待加密的数据
 // @param secretKey 密钥
 func AesEcbEncrypt(plainText, secretKey []byte) ([]byte, error) {
 	if len(secretKey) != 16 && len(secretKey) != 24 && len(secretKey) != 32 {
@@ -89,7 +89,7 @@ func AesEcbEncrypt(plainText, secretKey []byte) ([]byte, error) {
 	return encrypted, nil
 }
 
-// AesEcbDecrypt
+// AesEcbDecrypt  AES ECB式的解密,NoPadding
 // @param cipherText 加密后的数据
 // @param secretKey 密钥
 func AesEcbDecrypt(plainText, secretKey []byte) ([]byte, error) {

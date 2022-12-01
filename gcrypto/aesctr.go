@@ -7,7 +7,9 @@ import (
 	"encoding/hex"
 )
 
-// AesCtrEncrypt AES CTR模式的加密
+// AesCtrEncrypt AES CTR模式的加密,NoPadding
+// @param cipherText 代加密的数据
+// @param secretKey 密钥
 func AesCtrEncrypt(plainText, secretKey []byte) (cipherText []byte, err error) {
 	if len(secretKey) != 16 && len(secretKey) != 24 && len(secretKey) != 32 {
 		return nil, ErrKeyLengthSixteen
@@ -24,7 +26,9 @@ func AesCtrEncrypt(plainText, secretKey []byte) (cipherText []byte, err error) {
 	return cipherText, nil
 }
 
-// AesCtrDecrypt AES CTR模式的解密
+// AesCtrDecrypt AES CTR模式的解密,NoPadding
+// @param cipherText 加密后的数据
+// @param secretKey 密钥
 func AesCtrDecrypt(cipherText, secretKey []byte) (plainText []byte, err error) {
 	if len(secretKey) != 16 && len(secretKey) != 24 && len(secretKey) != 32 {
 		return nil, ErrKeyLengthSixteen
