@@ -2,142 +2,99 @@ package gcrypto
 
 import (
 	"fmt"
-	"hash"
 	"strconv"
 	"testing"
-	"unsafe"
 )
 
-var isLittleEndian = func() bool {
-	i := uint16(1)
-	return (*(*[2]byte)(unsafe.Pointer(&i)))[0] == 1
-}()
-
 var data = []struct {
+	seed  uint32
 	h32   uint32
 	h64_1 uint64
 	h64_2 uint64
 	s     string
 }{
-	{0x00000000, 0x0000000000000000, 0x0000000000000000, ""},
-	{0x248bfa47, 0xcbd8a7b341bd9b02, 0x5b1e906a48ae1d19, "hello"},
-	{0x149bbb7f, 0x342fac623a5ebc8e, 0x4cdcbc079642414d, "hello, world"},
-	{0xe31e8a70, 0xb89e5988b737affc, 0x664fc2950231b2cb, "19 Jan 2038 at 3:14:07 AM"},
-	{0xd5c48bfc, 0xcd99481f9ee902c9, 0x695da1a38987b6e7, "The quick brown fox jumps over the lazy dog."},
+	{0x00, 0x00000000, 0x0000000000000000, 0x0000000000000000, ""},
+	{0x00, 0x248bfa47, 0xcbd8a7b341bd9b02, 0x5b1e906a48ae1d19, "hello"},
+	{0x00, 0x149bbb7f, 0x342fac623a5ebc8e, 0x4cdcbc079642414d, "hello, world"},
+	{0x00, 0xe31e8a70, 0xb89e5988b737affc, 0x664fc2950231b2cb, "19 Jan 2038 at 3:14:07 AM"},
+	{0x00, 0xd5c48bfc, 0xcd99481f9ee902c9, 0x695da1a38987b6e7, "The quick brown fox jumps over the lazy dog."},
+
+	{0x01, 0x514e28b7, 0x4610abe56eff5cb5, 0x51622daa78f83583, ""},
+	{0x01, 0xbb4abcad, 0xa78ddff5adae8d10, 0x128900ef20900135, "hello"},
+	{0x01, 0x6f5cb2e9, 0x8b95f808840725c6, 0x1597ed5422bd493b, "hello, world"},
+	{0x01, 0xf50e1f30, 0x2a929de9c8f97b2f, 0x56a41d99af43a2db, "19 Jan 2038 at 3:14:07 AM"},
+	{0x01, 0x846f6a36, 0xfb3325171f9744da, 0xaaf8b92a5f722952, "The quick brown fox jumps over the lazy dog."},
+
+	{0x2a, 0x087fcd5c, 0xf02aa77dfa1b8523, 0xd1016610da11cbb9, ""},
+	{0x2a, 0xe2dbd2e1, 0xc4b8b3c960af6f08, 0x2334b875b0efbc7a, "hello"},
+	{0x2a, 0x7ec7c6c2, 0xb91864d797caa956, 0xd5d139a55afe6150, "hello, world"},
+	{0x2a, 0x58f745f6, 0xfd8f19ebdc8c6b6a, 0xd30fdc310fa08ff9, "19 Jan 2038 at 3:14:07 AM"},
+	{0x2a, 0xc02d1434, 0x74f33c659cda5af7, 0x4ec7a891caf316f0, "The quick brown fox jumps over the lazy dog."},
 }
 
-func TestRef(t *testing.T) {
+func TestRefStrings(t *testing.T) {
 	for _, elem := range data {
 
-		var h32 hash.Hash32 = New32()
+		h32 := New32WithSeed(elem.seed)
 		h32.Write([]byte(elem.s))
 		if v := h32.Sum32(); v != elem.h32 {
-			t.Errorf("'%s': 0x%x (want 0x%x)", elem.s, v, elem.h32)
+			t.Errorf("[Hash32] key: '%s', seed: '%d': 0x%x (want 0x%x)", elem.s, elem.seed, v, elem.h32)
 		}
 
-		var h32_byte hash.Hash32 = New32()
-		h32_byte.Write([]byte(elem.s))
+		h32.Reset()
+		h32.Write([]byte(elem.s))
 		target := fmt.Sprintf("%08x", elem.h32)
-		if p := fmt.Sprintf("%x", h32_byte.Sum(nil)); p != target {
-			t.Errorf("'%s': %s (want %s)", elem.s, p, target)
+		if p := fmt.Sprintf("%x", h32.Sum(nil)); p != target {
+			t.Errorf("[Hash32] key: '%s', seed: '%d': %s (want %s)", elem.s, elem.seed, p, target)
 		}
 
-		if v := Sum32([]byte(elem.s)); v != elem.h32 {
-			t.Errorf("'%s': 0x%x (want 0x%x)", elem.s, v, elem.h32)
+		if v := Sum32WithSeed([]byte(elem.s), elem.seed); v != elem.h32 {
+			t.Errorf("[Hash32] key '%s', seed: '%d': 0x%x (want 0x%x)", elem.s, elem.seed, v, elem.h32)
 		}
 
-		var h64 hash.Hash64 = New64()
+		h64 := New64WithSeed(elem.seed)
 		h64.Write([]byte(elem.s))
 		if v := h64.Sum64(); v != elem.h64_1 {
-			t.Errorf("'%s': 0x%x (want 0x%x)", elem.s, v, elem.h64_1)
+			t.Errorf("'[Hash64] key: '%s', seed: '%d': 0x%x (want 0x%x)", elem.s, elem.seed, v, elem.h64_1)
 		}
 
-		var h64_byte hash.Hash64 = New64()
-		h64_byte.Write([]byte(elem.s))
+		h64.Reset()
+		h64.Write([]byte(elem.s))
 		target = fmt.Sprintf("%016x", elem.h64_1)
-		if p := fmt.Sprintf("%x", h64_byte.Sum(nil)); p != target {
-			t.Errorf("Sum64: '%s': %s (want %s)", elem.s, p, target)
+		if p := fmt.Sprintf("%x", h64.Sum(nil)); p != target {
+			t.Errorf("[Hash64] key: '%s', seed: '%d': %s (want %s)", elem.s, elem.seed, p, target)
 		}
 
-		if v := Sum64([]byte(elem.s)); v != elem.h64_1 {
-			t.Errorf("Sum64: '%s': 0x%x (want 0x%x)", elem.s, v, elem.h64_1)
+		if v := Sum64WithSeed([]byte(elem.s), elem.seed); v != elem.h64_1 {
+			t.Errorf("[Hash64] key: '%s', seed: '%d': 0x%x (want 0x%x)", elem.s, elem.seed, v, elem.h64_1)
 		}
 
-		var h128 Hash128 = New128()
+		h128 := New128WithSeed(elem.seed)
+
 		h128.Write([]byte(elem.s))
 		if v1, v2 := h128.Sum128(); v1 != elem.h64_1 || v2 != elem.h64_2 {
-			t.Errorf("New128: '%s': 0x%x-0x%x (want 0x%x-0x%x)", elem.s, v1, v2, elem.h64_1, elem.h64_2)
+			t.Errorf("[Hash128] key: '%s', seed: '%d': 0x%x-0x%x (want 0x%x-0x%x)", elem.s, elem.seed, v1, v2, elem.h64_1, elem.h64_2)
 		}
 
-		var h128_byte Hash128 = New128()
-		h128_byte.Write([]byte(elem.s))
+		h128.Reset()
+		h128.Write([]byte(elem.s))
 		target = fmt.Sprintf("%016x%016x", elem.h64_1, elem.h64_2)
-		if p := fmt.Sprintf("%x", h128_byte.Sum(nil)); p != target {
-			t.Errorf("New128: '%s': %s (want %s)", elem.s, p, target)
+		if p := fmt.Sprintf("%x", h128.Sum(nil)); p != target {
+			t.Errorf("[Hash128] key: '%s', seed: '%d': %s (want %s)", elem.s, elem.seed, p, target)
 		}
 
-		if v1, v2 := Sum128([]byte(elem.s)); v1 != elem.h64_1 || v2 != elem.h64_2 {
-			t.Errorf("Sum128: '%s': 0x%x-0x%x (want 0x%x-0x%x)", elem.s, v1, v2, elem.h64_1, elem.h64_2)
-		}
-	}
-}
-
-// go1.14 showed that doing *(*uint32)(unsafe.Pointer(&data[i*4])) was unsafe
-// due to alignment issues; this test ensures that we will always catch that.
-func TestUnaligned(t *testing.T) {
-	in1 := []byte("abcdefghijklmnopqrstuvwxyz")
-	in2 := []byte("_abcdefghijklmnopqrstuvwxyz")
-
-	{
-		sum1 := Sum32(in1)
-		sum2 := Sum32(in2[1:])
-		if sum1 != sum2 {
-			t.Errorf("%s: got sum1 %v sum2 %v unexpectedly not equal", "Sum32", sum1, sum2)
+		if v1, v2 := Sum128WithSeed([]byte(elem.s), elem.seed); v1 != elem.h64_1 || v2 != elem.h64_2 {
+			t.Errorf("[Hash128] key: '%s', seed: '%d': 0x%x-0x%x (want 0x%x-0x%x)", elem.s, elem.seed, v1, v2, elem.h64_1, elem.h64_2)
 		}
 	}
-
-	{
-		sum1 := Sum64(in1)
-		sum2 := Sum64(in2[1:])
-		if sum1 != sum2 {
-			t.Errorf("%s: got sum1 %v sum2 %v unexpectedly not equal", "Sum64", sum1, sum2)
-		}
-	}
-
-	{
-		sum1l, sum1r := Sum128(in1)
-		sum2l, sum2r := Sum128(in2[1:])
-		if sum1l != sum2l {
-			t.Errorf("%s: got sum1l %v sum2l %v unexpectedly not equal", "Sum128 left", sum1l, sum2l)
-		}
-		if sum1r != sum2r {
-			t.Errorf("%s: got sum1r %v sum2r %v unexpectedly not equal", "Sum128 right", sum1r, sum2r)
-		}
-	}
-
-	{
-		sum1 := func() uint32 { n := New32(); n.Write(in1); return n.Sum32() }()
-		sum2 := func() uint32 { n := New32(); n.Write(in2[1:]); return n.Sum32() }()
-		if sum1 != sum2 {
-			t.Errorf("%s: got sum1 %v sum2 %v unexpectedly not equal", "New32", sum1, sum2)
-		}
-	}
-
-	{
-		sum1 := func() uint64 { n := New64(); n.Write(in1); return n.Sum64() }()
-		sum2 := func() uint64 { n := New64(); n.Write(in2[1:]); return n.Sum64() }()
-		if sum1 != sum2 {
-			t.Errorf("%s: got sum1 %v sum2 %v unexpectedly not equal", "New64", sum1, sum2)
-		}
-	}
-
 }
 
 func TestIncremental(t *testing.T) {
 	for _, elem := range data {
-		h32 := New32()
-		h128 := New128()
-		for i, j, k := 0, 0, len(elem.s); i < k; i = j {
+		h32 := New32WithSeed(elem.seed)
+		h128 := New128WithSeed(elem.seed)
+		var i, j int
+		for k := len(elem.s); i < k; i = j {
 			j = 2*i + 3
 			if j > k {
 				j = k
@@ -149,81 +106,65 @@ func TestIncremental(t *testing.T) {
 		}
 		println()
 		if v := h32.Sum32(); v != elem.h32 {
-			t.Errorf("'%s': 0x%x (want 0x%x)", elem.s, v, elem.h32)
+			t.Errorf("[Hash32] key: '%s', seed: '%d': 0x%x (want 0x%x)", elem.s, elem.seed, v, elem.h32)
 		}
 		if v1, v2 := h128.Sum128(); v1 != elem.h64_1 || v2 != elem.h64_2 {
-			t.Errorf("'%s': 0x%x-0x%x (want 0x%x-0x%x)", elem.s, v1, v2, elem.h64_1, elem.h64_2)
+			t.Errorf("[Hash128] key: '%s', seed: '%d': 0x%x-0x%x (want 0x%x-0x%x)", elem.s, elem.seed, v1, v2, elem.h64_1, elem.h64_2)
 		}
 	}
 }
 
-// Our lengths force 1) the function base itself (no loop/tail), 2) remainders
-// and 3) the loop itself.
-
-func Benchmark32Branches(b *testing.B) {
-	for length := 0; length <= 4; length++ {
+func Benchmark32(b *testing.B) {
+	buf := make([]byte, 8192)
+	for length := 1; length <= cap(buf); length *= 2 {
 		b.Run(strconv.Itoa(length), func(b *testing.B) {
-			buf := make([]byte, length)
+			buf = buf[:length]
 			b.SetBytes(int64(length))
+			b.ReportAllocs()
 			b.ResetTimer()
-			for length := 0; length < b.N; length++ {
+			for i := 0; i < b.N; i++ {
 				Sum32(buf)
 			}
 		})
 	}
 }
 
-func BenchmarkPartial32Branches(b *testing.B) {
-	for length := 0; length <= 4; length++ {
+func BenchmarkPartial32(b *testing.B) {
+	buf := make([]byte, 128)
+	for length := 8; length <= cap(buf); length *= 2 {
 		b.Run(strconv.Itoa(length), func(b *testing.B) {
-			buf := make([]byte, length)
+			buf = buf[:length]
 			b.SetBytes(int64(length))
+			b.ReportAllocs()
+
+			start := (32 / 8) / 2
+			chunks := 7
+			k := length / chunks
+			tail := (length - start) % k
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				hasher := New32()
-				hasher.Write(buf)
+				hasher.Write(buf[0:start])
+
+				for j := start; j+k <= length; j += k {
+					hasher.Write(buf[j : j+k])
+				}
+
+				hasher.Write(buf[length-tail:])
 				hasher.Sum32()
 			}
 		})
 	}
 }
 
-func Benchmark128Branches(b *testing.B) {
-	for length := 0; length <= 16; length++ {
-		b.Run(strconv.Itoa(length), func(b *testing.B) {
-			buf := make([]byte, length)
-			b.SetBytes(int64(length))
-			b.ResetTimer()
-			for i := 0; i < b.N; i++ {
-				Sum128(buf)
-			}
-		})
-	}
-}
-
-// Sizes below pick up where branches left off to demonstrate speed at larger
-// slice sizes.
-
-func Benchmark32Sizes(b *testing.B) {
+func Benchmark64(b *testing.B) {
 	buf := make([]byte, 8192)
-	for length := 32; length <= cap(buf); length *= 2 {
+	for length := 1; length <= cap(buf); length *= 2 {
 		b.Run(strconv.Itoa(length), func(b *testing.B) {
 			buf = buf[:length]
 			b.SetBytes(int64(length))
-			b.ResetTimer()
-			for i := 0; i < b.N; i++ {
-				Sum32(buf)
-			}
-		})
-	}
-}
-
-func Benchmark64Sizes(b *testing.B) {
-	buf := make([]byte, 8192)
-	for length := 32; length <= cap(buf); length *= 2 {
-		b.Run(strconv.Itoa(length), func(b *testing.B) {
-			buf = buf[:length]
-			b.SetBytes(int64(length))
+			b.ReportAllocs()
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				Sum64(buf)
@@ -232,30 +173,17 @@ func Benchmark64Sizes(b *testing.B) {
 	}
 }
 
-func Benchmark128Sizes(b *testing.B) {
+func Benchmark128(b *testing.B) {
 	buf := make([]byte, 8192)
-	for length := 32; length <= cap(buf); length *= 2 {
+	for length := 1; length <= cap(buf); length *= 2 {
 		b.Run(strconv.Itoa(length), func(b *testing.B) {
 			buf = buf[:length]
 			b.SetBytes(int64(length))
+			b.ReportAllocs()
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				Sum128(buf)
 			}
 		})
-	}
-}
-
-func BenchmarkNoescape32(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		var buf [8192]byte
-		Sum32(buf[:])
-	}
-}
-
-func BenchmarkNoescape128(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		var buf [8192]byte
-		Sum128(buf[:])
 	}
 }
