@@ -21,8 +21,7 @@ const (
 // digest32 represents a partial evaluation of a 32 bites hash.
 type digest32 struct {
 	digest
-	seed uint32
-	h1   uint32 // Unfinalized running hash.
+	h1 uint32 // Unfinalized running hash.
 }
 
 // New32 returns new 32-bit hasher
