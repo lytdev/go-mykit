@@ -12,6 +12,9 @@ import (
 // rsaSign 私钥生成签名
 func rsaSign(msg, priKey []byte) (sign []byte, err error) {
 	privateKey, err := x509.ParsePKCS1PrivateKey(priKey)
+	if err != nil {
+		return nil, err
+	}
 	hashed := Sha256(msg)
 	sign, err = rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hashed)
 	if err != nil {

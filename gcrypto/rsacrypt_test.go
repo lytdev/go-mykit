@@ -284,3 +284,9 @@ func TestRsaSignHex(t *testing.T) {
 	assert.Equal(t, res, false)
 
 }
+
+func TestRsaSign2(t *testing.T) {
+	hexKey1024, err := GenerateRsaKeyHex(1024)
+	_, err = RsaSignHex([]byte(rsaMsg), hexKey1024.PublicKey)
+	assert.NotNil(t, err)
+}
