@@ -22,11 +22,26 @@ type RsaKey struct {
 	PublicKey  string
 }
 
-func GenerateRsaKeyHex(bits int) (RsaKey, error) {
-	if bits != 1024 && bits != 2048 {
-		return RsaKey{}, ErrRsaBits
+const (
+	keyLen1024 = 1024
+	keyLen2048 = 2048
+)
+
+// GenerateRsaKey 生成公钥和私钥
+func GenerateRsaKey(bits int) (*rsa.PrivateKey, error) {
+	if bits != keyLen1024 && bits != keyLen2048 {
+		return nil, ErrRsaBits
 	}
 	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
+	if err != nil {
+		return nil, err
+	}
+	return privateKey, nil
+}
+
+// GenerateRsaKeyHex 生成公钥和私钥的hex格式
+func GenerateRsaKeyHex(bits int) (RsaKey, error) {
+	privateKey, err := GenerateRsaKey(bits)
 	if err != nil {
 		return RsaKey{}, err
 	}
@@ -36,11 +51,9 @@ func GenerateRsaKeyHex(bits int) (RsaKey, error) {
 	}, nil
 }
 
+// GenerateRsaKeyBase64 生成公钥和私钥的base64格式
 func GenerateRsaKeyBase64(bits int) (RsaKey, error) {
-	if bits != 1024 && bits != 2048 {
-		return RsaKey{}, ErrRsaBits
-	}
-	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
+	privateKey, err := GenerateRsaKey(bits)
 	if err != nil {
 		return RsaKey{}, err
 	}

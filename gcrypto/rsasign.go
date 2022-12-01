@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 )
 
+// rsaSign 私钥生成签名
 func rsaSign(msg, priKey []byte) (sign []byte, err error) {
 	privateKey, err := x509.ParsePKCS1PrivateKey(priKey)
 	hashed := Sha256(msg)
@@ -19,6 +20,7 @@ func rsaSign(msg, priKey []byte) (sign []byte, err error) {
 	return sign, nil
 }
 
+// rsaVerifySign 公钥验证签名
 func rsaVerifySign(msg []byte, sign []byte, pubKey []byte) bool {
 	publicKey, err := x509.ParsePKCS1PublicKey(pubKey)
 	if err != nil {
@@ -29,6 +31,7 @@ func rsaVerifySign(msg []byte, sign []byte, pubKey []byte) bool {
 	return result == nil
 }
 
+// RsaSignBase64 私钥生成签名转base64
 func RsaSignBase64(msg []byte, base64PriKey string) (base64Sign string, err error) {
 	priBytes, err := base64.StdEncoding.DecodeString(base64PriKey)
 	if err != nil {
@@ -41,6 +44,7 @@ func RsaSignBase64(msg []byte, base64PriKey string) (base64Sign string, err erro
 	return base64.StdEncoding.EncodeToString(sign), nil
 }
 
+// RsaVerifySignBase64 公钥验证base64格式签名
 func RsaVerifySignBase64(msg []byte, base64Sign, base64PubKey string) bool {
 	signBytes, err := base64.StdEncoding.DecodeString(base64Sign)
 	if err != nil {
@@ -53,6 +57,7 @@ func RsaVerifySignBase64(msg []byte, base64Sign, base64PubKey string) bool {
 	return rsaVerifySign(msg, signBytes, pubBytes)
 }
 
+// RsaSignHex 私钥生成签名转hex
 func RsaSignHex(msg []byte, hexPriKey string) (hexSign string, err error) {
 	priBytes, err := hex.DecodeString(hexPriKey)
 	if err != nil {
@@ -65,6 +70,7 @@ func RsaSignHex(msg []byte, hexPriKey string) (hexSign string, err error) {
 	return hex.EncodeToString(sign), nil
 }
 
+// RsaVerifySignHex 公钥验证hex格式签名
 func RsaVerifySignHex(msg []byte, hexSign, hexPubKey string) bool {
 	signBytes, err := hex.DecodeString(hexSign)
 	if err != nil {

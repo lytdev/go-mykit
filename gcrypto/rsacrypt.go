@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 )
 
+// rsaEncrypt 公钥加密
 func rsaEncrypt(plainText, publicKey []byte) (cipherText []byte, err error) {
 	pub, err := x509.ParsePKCS1PublicKey(publicKey)
 	if err != nil {
@@ -43,6 +44,7 @@ func rsaEncrypt(plainText, publicKey []byte) (cipherText []byte, err error) {
 	return cipherText, nil
 }
 
+// rsaDecrypt 私钥解密
 func rsaDecrypt(cipherText, privateKey []byte) (plainText []byte, err error) {
 	pri, err := x509.ParsePKCS1PrivateKey(privateKey)
 	if err != nil {
@@ -67,6 +69,7 @@ func rsaDecrypt(cipherText, privateKey []byte) (plainText []byte, err error) {
 	return plainText, nil
 }
 
+// RsaEncryptToBase64 公钥加密后转base64
 func RsaEncryptToBase64(plainText []byte, base64PubKey string) (base64CipherText string, err error) {
 	pub, err := base64.StdEncoding.DecodeString(base64PubKey)
 	if err != nil {
@@ -79,7 +82,7 @@ func RsaEncryptToBase64(plainText []byte, base64PubKey string) (base64CipherText
 	return base64.StdEncoding.EncodeToString(cipherBytes), nil
 }
 
-//
+// RsaDecryptByBase64 使用私钥解密密文的base64格式
 func RsaDecryptByBase64(base64CipherText, base64PriKey string) (plainText []byte, err error) {
 	privateBytes, err := base64.StdEncoding.DecodeString(base64PriKey)
 	if err != nil {
@@ -92,6 +95,7 @@ func RsaDecryptByBase64(base64CipherText, base64PriKey string) (plainText []byte
 	return rsaDecrypt(cipherTextBytes, privateBytes)
 }
 
+// RsaEncryptToHex 公钥加密后转hex
 func RsaEncryptToHex(plainText []byte, hexPubKey string) (hexCipherText string, err error) {
 	pub, err := hex.DecodeString(hexPubKey)
 	if err != nil {
@@ -104,6 +108,7 @@ func RsaEncryptToHex(plainText []byte, hexPubKey string) (hexCipherText string, 
 	return hex.EncodeToString(cipherBytes), nil
 }
 
+// RsaDecryptByHex 使用私钥解密密文的hex格式
 func RsaDecryptByHex(hexCipherText, hexPriKey string) (plainText []byte, err error) {
 	privateBytes, err := hex.DecodeString(hexPriKey)
 	if err != nil {
