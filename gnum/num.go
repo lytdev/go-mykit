@@ -19,3 +19,8 @@ func NumFillZero(n, l int) string {
 	sb.WriteString(numStr)
 	return sb.String()
 }
+
+// NumMulti 是否一个数字是否是另一个数字的整数倍
+func NumMulti(n1, n2 int) bool {
+	return (n1 % n2) == 0
+}
