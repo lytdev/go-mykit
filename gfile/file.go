@@ -41,13 +41,18 @@ func IsExist(fp string) bool {
 	return true
 }
 
-// IsFile 是否是文件
-func IsFile(f string) bool {
-	fi, e := os.Stat(f)
-	if e != nil {
+// IsDir 判断所给路径是否为文件夹
+func IsDir(dir string) bool {
+	s, err := os.Stat(dir)
+	if err != nil {
 		return false
 	}
-	return !fi.IsDir()
+	return s.IsDir()
+}
+
+// IsFile 是否是文件
+func IsFile(fp string) bool {
+	return IsExist(fp) && !IsDir(fp)
 }
 
 // ReplaceFileStr 替换某个文件中的字符串
@@ -284,4 +289,19 @@ func FileListByKey(dirPath, key string, needDir bool, isDescend bool, num int) (
 	}
 
 	return files, nil
+}
+
+// MkdirAll 自动根据路径创建文件夹
+func MkdirAll(fp string) error {
+	folder, _ := filepath.Split(fp)
+	if folder == "" {
+		return nil
+	}
+	if !IsExist(folder) {
+		err := os.MkdirAll(folder, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

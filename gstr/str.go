@@ -62,3 +62,54 @@ func SplitIgnoreBlank(s, sep string) []string {
 	}
 	return result
 }
+
+// SubStr 截取字符串的长度
+// @param str 原字符串
+// @param start 起始下标,负数从尾部开始,-1为最后一个
+// @param length 截取长度,负数表示截取到末尾
+func SubStrByLen(str string, start int, length int) (result string) {
+	s := []rune(str)
+	total := len(s)
+	if total == 0 {
+		return
+	}
+	// 允许从尾部开始计算
+	if start < 0 {
+		start = total + start
+		if start < 0 {
+			return
+		}
+	}
+	if start > total {
+		return
+	}
+	// 到末尾
+	if length < 0 {
+		length = total
+	}
+	end := start + length
+	if end > total {
+		result = string(s[start:])
+	} else {
+		result = string(s[start:end])
+	}
+	return
+}
+
+// SubStrByStr
+// @param str 原字符串
+// @param indexStr 切分的字符
+// @param fol 切分字符的第一次出现还是最后一次出现,1:第一次;2:最后一次;
+// @param fob 向前还是向后截取,1:向前;2:向后;
+func SubStrByStr(str, indexStr string, fol, fob int) (result string) {
+	//默认第一次
+	index := strings.Index(str, indexStr)
+	if fol == 2 {
+		index = strings.LastIndex(str, indexStr)
+	}
+	result = str[index:]
+	if fob == 1 {
+		result = str[0:index]
+	}
+	return
+}
