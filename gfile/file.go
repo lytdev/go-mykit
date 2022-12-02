@@ -305,3 +305,27 @@ func MkdirAll(fp string) error {
 	}
 	return nil
 }
+
+// PathJoin 拼接路径
+func PathJoin(pathArr ...string) string {
+	sb := strings.Builder{}
+	if len(pathArr) == 0 {
+		return sb.String()
+	}
+	for _, path := range pathArr {
+		for {
+			if strings.HasSuffix(path, string(os.PathSeparator)) {
+				path = path[:len(path)-1]
+			} else {
+				break
+			}
+		}
+		sb.WriteString(path)
+		sb.WriteString(string(os.PathSeparator))
+	}
+	sbStr := sb.String()
+	if strings.HasSuffix(sbStr, string(os.PathSeparator)) {
+		sbStr = sbStr[:len(sbStr)-1]
+	}
+	return sbStr
+}
