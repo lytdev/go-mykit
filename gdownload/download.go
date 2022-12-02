@@ -1,30 +1,133 @@
 package gdownload
 
 import (
-	"io"
+	"errors"
+	"fmt"
+	"net/http"
+	"runtime"
+	"strconv"
+	"sync"
+
+	"github.com/lytdev/go-mykit/gfile"
 )
 
 type Downloader struct {
-	Workers int
-	//PartSize string
-	PartSize int64
-	//BufSize  string
-	BufSize int64
+	// 是否开启并发下载 (若支持)
+	multi bool
+	// 并发协程数 (若支持,默认是cpu数)
+	concurrency int
+	// 断点续传 (若支持)
+	resume bool
 }
 
-const name = "download"
-
-var instance *Downloader
-
-func (d *Downloader) GetName() string {
-	return name
+// NewWithSingle 创建简单下载对象
+func NewWithSingle() *Downloader {
+	return &Downloader{
+		multi:       false,
+		concurrency: 1,
+		resume:      false,
+	}
 }
 
-func Get() *Downloader {
-	return instance
+// NewWithMulti 创建分片下载对象
+func NewWithMulti(runtimeNum int) *Downloader {
+	d := &Downloader{
+		multi:       true,
+		concurrency: runtime.NumCPU(),
+		resume:      true,
+	}
+	if runtimeNum > 0 {
+		d.concurrency = runtimeNum
+	}
+	return d
 }
 
-type FileReader interface {
-	GetFileSize() (int64, error)
-	OpenRange(offset, size int64) (io.ReadCloser, error)
+func (d *Downloader) SetMulti(multi bool) *Downloader {
+	d.multi = multi
+	return d
+}
+
+func (d *Downloader) SetConcurrency(concurrency int) *Downloader {
+	d.concurrency = concurrency
+	return d
+}
+
+func (d *Downloader) SetResume(resume bool) *Downloader {
+	d.resume = resume
+	return d
+}
+
+type WriteCounter struct {
+	current int
+	total   int
+	onWatch func(current, total int, percentage float64)
+	sync.Mutex
+}
+
+// getWritePercentage 获取进度
+func (wc *WriteCounter) getWritePercentage() float64 {
+	return float64(wc.current*10000/wc.total) / 100
+}
+
+func (wc *WriteCounter) Write(p []byte) (int, error) {
+	n := len(p)
+	if wc.onWatch != nil {
+		wc.Lock()
+		defer wc.Unlock()
+		wc.current += n
+		wc.onWatch(wc.current, wc.total, wc.getWritePercentage())
+	}
+	return n, nil
+}
+
+// 创建文件
+func initFilePath(fp string) string {
+	result := fp
+	renameNum := 1
+	mainName := gfile.MainName(fp)
+	for {
+		if gfile.IsExist(fp) {
+			if len(gfile.ExtName(fp)) > 0 {
+				fp = mainName + "_" + strconv.Itoa(renameNum) + "." + gfile.ExtName(fp)
+			} else {
+				fp = mainName + "_" + strconv.Itoa(renameNum)
+			}
+			renameNum += 1
+		} else {
+			break
+		}
+	}
+	return result
+}
+
+// Download 下载文件
+func (d *Downloader) Download(url, fp string, overwrite bool, onWatch func(current, total int, percentage float64)) error {
+	resp, err := http.Head(url)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("download fail: %s", resp.Status)
+	}
+
+	if len(fp) == 0 {
+		return errors.New("file path is error")
+	}
+	if err := gfile.MkdirAll(fp); err != nil {
+		return err
+	}
+
+	wc := new(WriteCounter)
+	if onWatch != nil {
+		wc.onWatch = onWatch
+	}
+	if !overwrite {
+		fp = initFilePath(fp)
+	}
+	if d.multi && resp.Header.Get("Accept-Ranges") == "bytes" {
+		// 支持分段下载
+		return d.MultiDownload(wc, url, fp, int(resp.ContentLength))
+	}
+
+	return d.SingleDownload(wc, url, fp)
 }
