@@ -48,3 +48,38 @@ func TestSliceIntersect(t *testing.T) {
 		t.Log(item)
 	}
 }
+
+type TmpStudent struct {
+	Id   int
+	Name string
+	Code string
+}
+
+func TestRemoveDuplicate(t *testing.T) {
+	s1 := []string{"a", "b", "d", "c", "d", "f"}
+	s2 := DistinctStr(s1)
+	t.Log(s2)
+
+	s3 := make([]TmpStudent, 0)
+	s3 = append(s3, TmpStudent{
+		Id:   1,
+		Name: "a-name",
+		Code: "a",
+	})
+	s3 = append(s3, TmpStudent{
+		Id:   2,
+		Name: "c-name",
+		Code: "b",
+	})
+	s3 = append(s3, TmpStudent{
+		Id:   2,
+		Name: "c-name",
+		Code: "a",
+	})
+
+	s4 := DistinctItem(s3, func(v1, v2 TmpStudent) bool {
+		return v1.Name == v2.Name
+	})
+	t.Log(s4)
+
+}

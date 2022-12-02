@@ -1,7 +1,7 @@
 package glist
 
 // FindIndex 查询泛型在切片里的位置
-func FindIndex[T any](s []T, compare func(t T) bool) (int, bool) {
+func FindIndex[T any](s []T, compare func(T) bool) (int, bool) {
 	for i, e := range s {
 		if compare(e) {
 			return i, true
@@ -31,7 +31,7 @@ func FindIntIndex(slice []int, val int) (int, bool) {
 }
 
 // RemoveFirstItem 从切片中移除第一个匹配元素
-func RemoveFirstItem[T any](s []T, compare func(t T) bool) []T {
+func RemoveFirstItem[T any](s []T, compare func(T) bool) []T {
 	r := make([]T, 0)
 	idx, ok := FindIndex(s, compare)
 	if ok {
@@ -47,7 +47,7 @@ func RemoveFirstItem[T any](s []T, compare func(t T) bool) []T {
 }
 
 // RemoveAllItem 从切片中移除所有匹配的元素
-func RemoveAllItem[T any](s []T, compare func(t T) bool) []T {
+func RemoveAllItem[T any](s []T, compare func(T) bool) []T {
 	r := s[:]
 	for {
 		idx, ok := FindIndex(r, compare)
@@ -60,7 +60,7 @@ func RemoveAllItem[T any](s []T, compare func(t T) bool) []T {
 }
 
 // SliceIntersect 2个切片的交集
-func SliceIntersect[T any](s1 []T, s2 []T, compare func(t1, t2 T) bool) []T {
+func SliceIntersect[T any](s1 []T, s2 []T, compare func(T, T) bool) []T {
 	s := make([]T, 0)
 	for _, v1 := range s1 {
 		for _, v2 := range s2 {
@@ -73,7 +73,7 @@ func SliceIntersect[T any](s1 []T, s2 []T, compare func(t1, t2 T) bool) []T {
 }
 
 // SliceDiff 2个切片的差集
-func SliceDiff[T any](s1 []T, s2 []T, compare func(t1, t2 T) bool) []T {
+func SliceDiff[T any](s1 []T, s2 []T, compare func(T, T) bool) []T {
 	s := make([]T, 0)
 	for _, v1 := range s1 {
 		_, ok := FindIndex(s2, func(v2 T) bool {
@@ -84,4 +84,42 @@ func SliceDiff[T any](s1 []T, s2 []T, compare func(t1, t2 T) bool) []T {
 		}
 	}
 	return s
+}
+
+// DistinctStr 字符串数组去重
+func DistinctStr(slice []string) []string {
+	result := make([]string, 0)
+	for _, temp := range slice {
+		_, ok := FindStrIndex(result, temp)
+		if !ok {
+			result = append(result, temp)
+		}
+	}
+	return result
+}
+
+// DistinctInt 整型数组去重
+func DistinctInt(slice []int) []int {
+	result := make([]int, 0)
+	for _, temp := range slice {
+		_, ok := FindIntIndex(result, temp)
+		if !ok {
+			result = append(result, temp)
+		}
+	}
+	return result
+}
+
+// DistinctItem 数组去重
+func DistinctItem[T any](slice []T, compare func(T, T) bool) []T {
+	result := make([]T, 0)
+	for _, temp := range slice {
+		_, ok := FindIndex(result, func(v2 T) bool {
+			return compare(temp, v2)
+		})
+		if !ok {
+			result = append(result, temp)
+		}
+	}
+	return result
 }
