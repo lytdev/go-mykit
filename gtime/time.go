@@ -1,7 +1,9 @@
 package gtime
 
 import (
+	"database/sql/driver"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -161,4 +163,40 @@ func GetDayEndMoment(t time.Time) time.Time {
 	y, m, d := t.Date()
 	n := time.Date(y, m, d, 23, 59, 59, 999999999, time.Local)
 	return n
+}
+
+type FormatTime struct {
+	time.Time
+}
+
+// UnmarshalJSON 替换time的json反序列化
+func (t *FormatTime) UnmarshalJSON(data []byte) (err error) {
+	now, err := time.ParseInLocation(`"`+MYSec+`"`, string(data), TimeLocation)
+	*t = FormatTime{
+		now,
+	}
+	return
+}
+
+// MarshalJSON 替换time的json序列化
+func (t FormatTime) MarshalJSON() ([]byte, error) {
+	formatted := fmt.Sprintf("\"%s\"", t.Format(MYSec))
+	return []byte(formatted), nil
+}
+
+func (t FormatTime) Value() (driver.Value, error) {
+	var zeroTime time.Time
+	if t.Time.UnixNano() == zeroTime.UnixNano() {
+		return nil, nil
+	}
+	return t.Time, nil
+}
+
+func (t *FormatTime) Scan(v interface{}) error {
+	value, ok := v.(time.Time)
+	if ok {
+		*t = FormatTime{Time: value}
+		return nil
+	}
+	return fmt.Errorf("can not convert %v to timestamp", v)
 }
