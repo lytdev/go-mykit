@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+//https://github.com/spf13/cast
+
 var errNegativeNotAllowed = errors.New("unable to cast negative value")
 
 // ToTimeE casts an interface to a time.Time type.

@@ -83,7 +83,7 @@ func (c *ExcelStruct) SetPointerStruct(ptr interface{}) *ExcelStruct {
 		if tagStr == "" {
 			fields.Title = fieldInfo.Name
 		} else {
-			tagMap := gconv.TagConvMap(tagStr)
+			tagMap := gconv.TagStrConvMap(tagStr)
 			if title, ok := tagMap[TagCustomTitleKey]; ok {
 				fields.Title = title
 			}
