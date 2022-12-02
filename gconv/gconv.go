@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-// TagConvMap /** 结构体的tag(tag的多个kay-value是使用;隔开的)转map
+// TagStrConvMap 结构体的tag(tag的多个kay-value是使用;隔开的)转map
 func TagStrConvMap(tagStr string) map[string]string {
 	resultData := make(map[string]string)
 	splitData := strings.Split(tagStr, ";")
