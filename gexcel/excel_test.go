@@ -22,7 +22,7 @@ type ExcelTest struct {
 }
 
 func TestRead(t *testing.T) {
-	filePath := "../_doc/图书列表.xlsx"
+	filePath := "../testdata/图书列表.xlsx"
 	xlsx, err := excelize.OpenFile(filePath)
 	if err != nil {
 		t.Error("文件读取异常:", err)
@@ -58,7 +58,7 @@ func TestRead(t *testing.T) {
 
 //测试直接读取本地文件
 func TestReadLocalFile(t *testing.T) {
-	filePath := "../_doc/图书列表.xlsx"
+	filePath := "../testdata/图书列表.xlsx"
 	var ptr ExcelTest
 	dataList, err := ReadFileToList(filePath, 0, ptr)
 	if err != nil {
@@ -112,7 +112,7 @@ func TestWriteFile(t *testing.T) {
 		os.Exit(1)
 	}
 	// 根据指定路径保存文件
-	if err := f.SaveAs("../_doc/测试excel输出.xlsx"); err != nil {
+	if err := f.SaveAs("../testdata/测试excel输出.xlsx"); err != nil {
 		fmt.Println(err)
 	}
 }
