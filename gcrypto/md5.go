@@ -3,7 +3,18 @@ package gcrypto
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"strings"
 )
+
+// MD5Upper MD5大写加密32位
+func MD5Upper(value string) string {
+	return strings.ToUpper(Md5(value))
+}
+
+// MD5To16Upper MD5大写加密16位
+func MD5To16Upper(value string) string {
+	return strings.ToUpper(Md5To16(value)[8:24])
+}
 
 // Md5 32位md5加密后字符串
 func Md5(str string) string {
