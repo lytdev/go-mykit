@@ -8,11 +8,11 @@ import (
 type ProgressEventType int
 
 const (
-	// TransferStartedEvent transfer started, set TotalBytes
+	// TransferStartedEvent 开始下载, set TotalBytes
 	TransferStartedEvent ProgressEventType = 1 + iota
-	// TransferDataEvent transfer data, set ConsumedBytes anmd TotalBytes
+	// TransferDataEvent 下载进行中, set ConsumedBytes anmd TotalBytes
 	TransferDataEvent
-	// TransferCompletedEvent transfer completed
+	// TransferCompletedEvent 下载完毕
 	TransferCompletedEvent
 	// TransferFailedEvent transfer encounters an error
 	TransferFailedEvent
@@ -21,9 +21,10 @@ const (
 // ProgressEvent defines progress event
 type ProgressEvent struct {
 	ConsumedBytes int64
-	TotalBytes    int64
-	RwBytes       int64
-	EventType     ProgressEventType
+	//总文件大小
+	TotalBytes int64
+	RwBytes    int64
+	EventType  ProgressEventType
 }
 
 // ProgressListener listens progress change
