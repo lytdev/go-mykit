@@ -35,10 +35,7 @@ func MainName(fp string) string {
 // IsExist 判断文件或文件夹是否存在
 func IsExist(fp string) bool {
 	_, err := os.Stat(fp)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 // IsDir 判断所给路径是否为文件夹
@@ -132,9 +129,7 @@ func ListFile(dirPath string) ([]os.FileInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, fi := range fis {
-		files = append(files, fi)
-	}
+	files = append(files, fis...)
 	return files, nil
 }
 
