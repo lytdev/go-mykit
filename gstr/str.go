@@ -47,7 +47,7 @@ func SplitIgnoreBlank(s, sep string) []string {
 	return result
 }
 
-// SubStr 截取字符串的长度
+// SubStrByLen 截取字符串的长度
 // @param str 原字符串
 // @param start 起始下标,负数从尾部开始,-1为最后一个
 // @param length 截取长度,负数表示截取到末尾
@@ -96,4 +96,45 @@ func SubStrByStr(str, indexStr string, fol, fob int) (result string) {
 		result = str[0:index]
 	}
 	return
+}
+
+// StrConcat 字符串拼接
+func StrConcat(strArr ...string) string {
+	sb := strings.Builder{}
+	if len(strArr) == 0 {
+		return ""
+	}
+	for _, str := range strArr {
+		sb.WriteString(str)
+	}
+	return sb.String()
+}
+
+// ChunkString 返回一个字符串数组,依次将字符串的每size个字符合并为新字符串.如果数组不能被平均分割,最后一个块将是剩余的元素.
+func ChunkString[T ~string](str T, size int) []T {
+	if size <= 0 {
+		panic("lo.ChunkString: Size parameter must be greater than 0")
+	}
+
+	if len(str) == 0 {
+		return []T{""}
+	}
+
+	if size >= len(str) {
+		return []T{str}
+	}
+
+	var chunks []T = make([]T, 0, ((len(str)-1)/size)+1)
+	currentLen := 0
+	currentStart := 0
+	for i := range str {
+		if currentLen == size {
+			chunks = append(chunks, str[currentStart:i])
+			currentLen = 0
+			currentStart = i
+		}
+		currentLen++
+	}
+	chunks = append(chunks, str[currentStart:])
+	return chunks
 }
