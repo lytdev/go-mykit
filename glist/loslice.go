@@ -3,6 +3,7 @@ package glist
 import (
 	"github.com/lytdev/go-mykit/gfun"
 	"math/rand"
+	"sync"
 )
 
 //https://github.com/samber/lo/slice.go
@@ -665,4 +666,130 @@ func LastIndexOf[T comparable](collection []T, element T) int {
 	}
 
 	return -1
+}
+
+// ToSlicePtr 返回切片里元素指针的新切片
+func ToSlicePtr[T any](collection []T) []*T {
+	return Map(collection, func(x T, _ int) *T {
+		return &x
+	})
+}
+
+// ParallelMap Map的多协程版本
+func ParallelMap[T any, R any](collection []T, iteratee func(item T, index int) R) []R {
+	result := make([]R, len(collection))
+
+	var wg sync.WaitGroup
+	wg.Add(len(collection))
+
+	for i, item := range collection {
+		go func(_item T, _i int) {
+			res := iteratee(_item, _i)
+
+			result[_i] = res
+
+			wg.Done()
+		}(item, i)
+	}
+
+	wg.Wait()
+
+	return result
+}
+
+// ParallelForEach ForEach的多协程版本
+func ParallelForEach[T any](collection []T, iteratee func(item T, index int)) {
+	var wg sync.WaitGroup
+	wg.Add(len(collection))
+
+	for i, item := range collection {
+		go func(_item T, _i int) {
+			iteratee(_item, _i)
+			wg.Done()
+		}(item, i)
+	}
+
+	wg.Wait()
+}
+
+// ParallelTimes Times的多携程版本
+func ParallelTimes[T any](count int, iteratee func(index int) T) []T {
+	result := make([]T, count)
+
+	var wg sync.WaitGroup
+	wg.Add(count)
+
+	for i := 0; i < count; i++ {
+		go func(_i int) {
+			item := iteratee(_i)
+
+			result[_i] = item
+
+			wg.Done()
+		}(i)
+	}
+
+	wg.Wait()
+
+	return result
+}
+
+// ParallelGroupBy GroupBy的多协程版本
+func ParallelGroupBy[T any, U comparable](collection []T, iteratee func(item T) U) map[U][]T {
+	result := map[U][]T{}
+
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+	wg.Add(len(collection))
+
+	for _, item := range collection {
+		go func(_item T) {
+			key := iteratee(_item)
+
+			mu.Lock()
+
+			result[key] = append(result[key], _item)
+
+			mu.Unlock()
+			wg.Done()
+		}(item)
+	}
+
+	wg.Wait()
+
+	return result
+}
+
+// ParallelPartitionBy PartitionBy的多协程版本
+func ParallelPartitionBy[T any, K comparable](collection []T, iteratee func(item T) K) [][]T {
+	var result = make([][]T, 0)
+	seen := map[K]int{}
+
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+	wg.Add(len(collection))
+
+	for _, item := range collection {
+		go func(_item T) {
+			key := iteratee(_item)
+
+			mu.Lock()
+
+			resultIndex, ok := seen[key]
+			if !ok {
+				resultIndex = len(result)
+				seen[key] = resultIndex
+				result = append(result, []T{})
+			}
+
+			result[resultIndex] = append(result[resultIndex], _item)
+
+			mu.Unlock()
+			wg.Done()
+		}(item)
+	}
+
+	wg.Wait()
+
+	return result
 }
