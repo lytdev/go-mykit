@@ -1,6 +1,9 @@
 package glist
 
-import "math/rand"
+import (
+	"github.com/lytdev/go-mykit/gfun"
+	"math/rand"
+)
 
 //https://github.com/samber/lo/slice.go
 
@@ -8,7 +11,7 @@ import "math/rand"
 // @param: collection原切片
 // @param: predicate执行计算的函数,返回true才满足过滤的条件
 func Filter[T any](collection []T, predicate func(item T, index int) bool) []T {
-	var result []T
+	var result = make([]T, 0)
 	for i, item := range collection {
 		if predicate(item, i) {
 			result = append(result, item)
@@ -177,7 +180,7 @@ func Chunk[T any](collection []T, size int) [][]T {
 
 // PartitionBy 和GroupBy类似,返回拆分为组的元素切片.分组是通过iteratee运行切片的每个元素的结果生成的.
 func PartitionBy[T any, K comparable](collection []T, iteratee func(item T) K) [][]T {
-	var result [][]T
+	var result = make([][]T, 0)
 	seen := map[K]int{}
 
 	for _, item := range collection {
@@ -395,7 +398,7 @@ func DropRightWhile[T any](collection []T, predicate func(item T) bool) []T {
 // Reject 是Filter的相反切片,排除掉返回结果为true的元素
 // Play: https://go.dev/play/p/YkLMODy1WEL
 func Reject[V any](collection []V, predicate func(item V, index int) bool) []V {
-	var result []V
+	var result = make([]V, 0)
 
 	for i, item := range collection {
 		if !predicate(item, i) {
@@ -578,4 +581,75 @@ func IsSortedByKey[T any, K Ordered](collection []T, iteratee func(item T) K) bo
 	}
 
 	return true
+}
+
+// Range 根据给定的长度创建切片
+// Play: https://go.dev/play/p/0r6VimXAi9H
+func Range(elementNum int) []int {
+	length := gfun.If(elementNum < 0, -elementNum).Else(elementNum)
+	result := make([]int, length)
+	step := gfun.If(elementNum < 0, -1).Else(1)
+	for i, j := 0, 0; i < length; i, j = i+1, j+step {
+		result[i] = j
+	}
+	return result
+}
+
+// RangeFrom 根据给定的其实数值和长度创建切片
+// Play: https://go.dev/play/p/0r6VimXAi9H
+func RangeFrom[T Integer | Float](start T, elementNum int) []T {
+	length := gfun.If(elementNum < 0, -elementNum).Else(elementNum)
+	result := make([]T, length)
+	step := gfun.If(elementNum < 0, -1).Else(1)
+	for i, j := 0, start; i < length; i, j = i+1, j+T(step) {
+		result[i] = j
+	}
+	return result
+}
+
+// RangeWithStep 给定开始值和结束值,按照步长生成切片
+// @param: start 开始值
+// @param: end 结束值
+// @param: step 步长
+func RangeWithStep[T Integer | Float](start, end, step T) []T {
+	var result = make([]T, 0)
+	if start == end || step == 0 {
+		return result
+	}
+	if start < end {
+		if step < 0 {
+			return result
+		}
+		for i := start; i < end; i += step {
+			result = append(result, i)
+		}
+		return result
+	}
+	if step > 0 {
+		return result
+	}
+	for i := start; i > end; i += step {
+		result = append(result, i)
+	}
+	return result
+}
+
+// Sum 对切片元素的值进行累计
+// Play: https://go.dev/play/p/upfeJVqs4Bt
+func Sum[T Float | Integer | Complex](collection []T) T {
+	var sum T = 0
+	for _, val := range collection {
+		sum += val
+	}
+	return sum
+}
+
+// SumBy 对切片的元素进行计算,计算的结果进行累加
+// Play: https://go.dev/play/p/Dz_a_7jN_ca
+func SumBy[T any, R Float | Integer | Complex](collection []T, iteratee func(item T) R) R {
+	var sum R = 0
+	for _, item := range collection {
+		sum = sum + iteratee(item)
+	}
+	return sum
 }

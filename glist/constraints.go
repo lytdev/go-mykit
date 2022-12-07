@@ -24,3 +24,7 @@ type Integer interface {
 type Ordered interface {
 	Integer | Float | ~string
 }
+
+type Complex interface {
+	~complex64 | ~complex128
+}

@@ -439,3 +439,49 @@ func TestIsSortedByKey(t *testing.T) {
 	// true
 	t.Logf("%v", result)
 }
+
+func TestRange(t *testing.T) {
+	result1 := Range(4)
+	result2 := Range(-4)
+	result3 := RangeFrom(3, 5)
+	result4 := RangeFrom(2.0, 5)
+	result5 := RangeWithStep(0, 20, 5)
+	result6 := RangeWithStep[float32](-1.0, -4.0, -1.0)
+	result7 := RangeWithStep(1, 4, -1)
+	result8 := Range(0)
+
+	// [0 1 2 3]
+	// [0 -1 -2 -3]
+	// [3 4 5 6 7]
+	// [2 3 4 5 6]
+	// [0 5 10 15]
+	// [-1 -2 -3]
+	// []
+	// []
+	t.Logf("%v\n", result1)
+	t.Logf("%v\n", result2)
+	t.Logf("%v\n", result3)
+	t.Logf("%v\n", result4)
+	t.Logf("%v\n", result5)
+	t.Logf("%v\n", result6)
+	t.Logf("%v\n", result7)
+	t.Logf("%v\n", result8)
+}
+
+func TestSum(t *testing.T) {
+	list := []int{1, 2, 3, 4, 5}
+
+	sum := Sum(list)
+	// 15
+	t.Logf("%v", sum)
+}
+
+func TestSumBy(t *testing.T) {
+	list := []string{"foo", "bar"}
+
+	result := SumBy(list, func(item string) int {
+		return len(item)
+	})
+	// 6
+	t.Logf("%v", result)
+}
