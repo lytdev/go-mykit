@@ -215,3 +215,25 @@ func MapToSlice[K comparable, V any, R any](in map[K]V, iteratee func(key K, val
 
 	return result
 }
+
+// FindKey 通过map的value查找key
+func FindKey[K comparable, V comparable](object map[K]V, value V) (K, bool) {
+	for k, v := range object {
+		if v == value {
+			return k, true
+		}
+	}
+	var zero K
+	return zero, false
+}
+
+// FindKeyBy 通过规定的函数查找map的key
+func FindKeyBy[K comparable, V any](object map[K]V, predicate func(key K, value V) bool) (K, bool) {
+	for k, v := range object {
+		if predicate(k, v) {
+			return k, true
+		}
+	}
+	var zero K
+	return zero, false
+}
