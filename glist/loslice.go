@@ -653,3 +653,16 @@ func SumBy[T any, R Float | Integer | Complex](collection []T, iteratee func(ite
 	}
 	return sum
 }
+
+// LastIndexOf 返回数组中最后出现的值所在的索引,没有找到的话返回-1
+func LastIndexOf[T comparable](collection []T, element T) int {
+	length := len(collection)
+
+	for i := length - 1; i >= 0; i-- {
+		if collection[i] == element {
+			return i
+		}
+	}
+
+	return -1
+}

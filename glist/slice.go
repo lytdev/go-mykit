@@ -1,9 +1,23 @@
 package glist
 
+import "fmt"
+
 // FindIndex 查询泛型在切片里的位置
 func FindIndex[T any](s []T, compare func(T) bool) (int, bool) {
 	for i, e := range s {
 		if compare(e) {
+			return i, true
+		}
+	}
+	return -1, false
+}
+
+// FindLastIndexOf 查询泛型在切片里最后一次的位置
+func FindLastIndexOf[T any](collection []T, predicate func(item T) bool) (int, bool) {
+	length := len(collection)
+
+	for i := length - 1; i >= 0; i-- {
+		if predicate(collection[i]) {
 			return i, true
 		}
 	}
@@ -122,4 +136,116 @@ func DistinctItem[T any](slice []T, compare func(T, T) bool) []T {
 		}
 	}
 	return result
+}
+
+// Min 返回切片的最小值
+func Min[T Ordered](collection []T) T {
+	var min T
+
+	if len(collection) == 0 {
+		return min
+	}
+
+	min = collection[0]
+
+	for i := 1; i < len(collection); i++ {
+		item := collection[i]
+
+		if item < min {
+			min = item
+		}
+	}
+
+	return min
+}
+
+// MinBy 根据给定的比较函数,返回切片的最小值
+func MinBy[T any](collection []T, comparison func(a T, b T) bool) T {
+	var min T
+
+	if len(collection) == 0 {
+		return min
+	}
+
+	min = collection[0]
+
+	for i := 1; i < len(collection); i++ {
+		item := collection[i]
+
+		if comparison(item, min) {
+			min = item
+		}
+	}
+
+	return min
+}
+
+// Max 返回切片的最大值
+func Max[T Ordered](collection []T) T {
+	var max T
+
+	if len(collection) == 0 {
+		return max
+	}
+
+	max = collection[0]
+
+	for i := 1; i < len(collection); i++ {
+		item := collection[i]
+
+		if item > max {
+			max = item
+		}
+	}
+
+	return max
+}
+
+// MaxBy 根据给定的比较函数,返回切片的最大值
+func MaxBy[T any](collection []T, comparison func(a T, b T) bool) T {
+	var max T
+
+	if len(collection) == 0 {
+		return max
+	}
+
+	max = collection[0]
+
+	for i := 1; i < len(collection); i++ {
+		item := collection[i]
+
+		if comparison(item, max) {
+			max = item
+		}
+	}
+
+	return max
+}
+
+// Last returns the last element of a collection or error if empty.
+func Last[T any](collection []T) (T, error) {
+	length := len(collection)
+
+	if length == 0 {
+		var t T
+		return t, fmt.Errorf("last: cannot extract the last element of an empty slice")
+	}
+
+	return collection[length-1], nil
+}
+
+// Nth returns the element at index `nth` of collection. If `nth` is negative, the nth element
+// from the end is returned. An error is returned when nth is out of slice bounds.
+func Nth[T any, N Integer](collection []T, nth N) (T, error) {
+	n := int(nth)
+	l := len(collection)
+	if n >= l || -n > l {
+		var t T
+		return t, fmt.Errorf("nth: %d out of slice bounds", n)
+	}
+
+	if n >= 0 {
+		return collection[n], nil
+	}
+	return collection[l+n], nil
 }
