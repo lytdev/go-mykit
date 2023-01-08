@@ -12,8 +12,8 @@ func (d *Downloader) SingleDownload(wc *WriteCounter, url, filename string) erro
 	if err != nil {
 		return err
 	}
-	defer func(Body io.ReadCloser) {
-		_ = Body.Close()
+	defer func(body io.ReadCloser) {
+		_ = body.Close()
 	}(resp.Body)
 	wc.total = int(resp.ContentLength)
 	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)

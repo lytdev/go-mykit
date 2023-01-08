@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"runtime"
 	"strconv"
-	"sync"
 
 	"github.com/lytdev/go-mykit/gfile"
 )
 
+// Downloader 下载执行对象
 type Downloader struct {
 	// 是否开启并发下载 (若支持)
 	multi bool
@@ -42,42 +42,22 @@ func NewWithMulti(runtimeNum int) *Downloader {
 	return d
 }
 
+// 设置是否多线程下载
 func (d *Downloader) SetMulti(multi bool) *Downloader {
 	d.multi = multi
 	return d
 }
 
+// 设置下载的多线程数
 func (d *Downloader) SetConcurrency(concurrency int) *Downloader {
 	d.concurrency = concurrency
 	return d
 }
 
+// 设置是否断点续传
 func (d *Downloader) SetResume(resume bool) *Downloader {
 	d.resume = resume
 	return d
-}
-
-type WriteCounter struct {
-	current int
-	total   int
-	onWatch func(current, total int, percentage float64)
-	sync.Mutex
-}
-
-// getWritePercentage 获取进度
-func (wc *WriteCounter) getWritePercentage() float64 {
-	return float64(wc.current*10000/wc.total) / 100
-}
-
-func (wc *WriteCounter) Write(p []byte) (int, error) {
-	n := len(p)
-	if wc.onWatch != nil {
-		wc.Lock()
-		defer wc.Unlock()
-		wc.current += n
-		wc.onWatch(wc.current, wc.total, wc.getWritePercentage())
-	}
-	return n, nil
 }
 
 // 创建文件
