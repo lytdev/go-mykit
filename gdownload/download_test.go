@@ -28,13 +28,13 @@ func TestDownload(t *testing.T) {
 
 func TestDownloadSingle(t *testing.T) {
 	wc := new(WriteCounter)
-	wc.onWatch = func(current, total int, percentage float64) {
+	wc.SetWatch(func(current, total int, percentage float64) {
 		fmt.Printf("\r当前已下载大小 %f MB, 下载进度：%.2f%%, 总大小 %f MB",
 			float64(current)/1024/1024,
 			percentage,
 			float64(total)/1024/1024,
 		)
-	}
+	})
 	downloader := NewWithSingle()
 
 	err := downloader.SingleDownload(wc, downloadUrl, "../testdata/example2.mp4")
@@ -50,13 +50,13 @@ func TestDownloadMulti(t *testing.T) {
 		t.Error(err)
 	}
 	wc := new(WriteCounter)
-	wc.onWatch = func(current, total int, percentage float64) {
+	wc.SetWatch(func(current, total int, percentage float64) {
 		fmt.Printf("\r当前已下载大小 %f MB, 下载进度：%.2f%%, 总大小 %f MB",
 			float64(current)/1024/1024,
 			percentage,
 			float64(total)/1024/1024,
 		)
-	}
+	})
 	downloader := NewWithMulti(12)
 	err = downloader.MultiDownload(wc, downloadUrl, "../testdata/example2.mp4", int(resp.ContentLength))
 	if err != nil {
