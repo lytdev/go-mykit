@@ -3,19 +3,20 @@ package gexcel
 import (
 	"errors"
 	"fmt"
-	"github.com/lytdev/go-mykit/gstruct"
 	"io"
 	"reflect"
 	"strconv"
 	"time"
 
+	"github.com/lytdev/go-mykit/gstruct"
+
 	"github.com/xuri/excelize/v2"
 )
 
 // NewExcelStructDefault
-//  @Description: 创建读取的结构体 默认,从第一行开始,索引从 0开始
-//  @return *ExcelStruct
 //
+//	@Description: 创建读取的结构体 默认,从第一行开始,索引从 0开始
+//	@return *ExcelStruct
 func NewExcelStructDefault() *ExcelStruct {
 	n := new(ExcelStruct)
 	n.StartRow = 1
@@ -25,12 +26,12 @@ func NewExcelStructDefault() *ExcelStruct {
 }
 
 // NewExcelStruct
-//  @Description:
-//  @param StartRow 开始行,索引从0开始
-//  @param IndexMax 索引最大行,如果结构体中的index大于配置的,那么使用结构体中的
-//  @param fastErr
-//  @return *ExcelStruct
 //
+//	@Description:
+//	@param StartRow 开始行,索引从0开始
+//	@param IndexMax 索引最大行,如果结构体中的index大于配置的,那么使用结构体中的
+//	@param fastErr
+//	@return *ExcelStruct
 func NewExcelStruct(StartRow, IndexMax int, fastErr bool) *ExcelStruct {
 	n := new(ExcelStruct)
 	n.StartRow = StartRow
@@ -40,60 +41,59 @@ func NewExcelStruct(StartRow, IndexMax int, fastErr bool) *ExcelStruct {
 }
 
 // ReadFileToList
-//  @Description:读取本地文件至切片
-//  @param filePath 本地文件的路径
-//  @param sheetIndex 需要读取第几个单元薄
-//  @param ptr 读取后的切片对象
-//  @return resultData 返回的切片
-//  @return err 错误信息
 //
-func ReadFileToList[T any](filePath string, sheetIndex int, ptr T) (resultData []T, err error) {
+//	@Description:读取本地文件至切片
+//	@param filePath 本地文件的路径
+//	@param sheetIndex 需要读取第几个单元薄
+//	@return resultData 返回的切片
+//	@return err 错误信息
+func ReadFileToList[T any](filePath string, sheetIndex int) (resultData []T, err error) {
 	xlsx, err := excelize.OpenFile(filePath)
 	if err != nil {
 		fmt.Println("文件读取异常:" + err.Error())
 		return nil, err
 	}
-	return readCore(xlsx, sheetIndex, ptr)
+	return readCore[T](xlsx, sheetIndex)
 }
 
 // ReadFileStreamToList
-//  @Description: 读取文件流
-//  @param r 文件流
-//  @param sheetIndex 需要读取第几个单元薄
-//  @param ptr 读取后的切片对象
-//  @return resultData 返回的切片
-//  @return err 错误信息
 //
-func ReadFileStreamToList[T any](r io.Reader, sheetIndex int, ptr T) (resultData []T, err error) {
+//	@Description: 读取文件流
+//	@param r 文件流
+//	@param sheetIndex 需要读取第几个单元薄
+//	@param ptr 读取后的切片对象
+//	@return resultData 返回的切片
+//	@return err 错误信息
+func ReadFileStreamToList[T any](r io.Reader, sheetIndex int) (resultData []T, err error) {
 	xlsx, err := excelize.OpenReader(r)
 	if err != nil {
 		fmt.Println("文件读取异常:" + err.Error())
 		return nil, err
 	}
-	return readCore(xlsx, sheetIndex, ptr)
+	return readCore[T](xlsx, sheetIndex)
 }
 
 // readCore
-//  @Description: 读取excel的核心方法
-//  @param xlsx excelize.File对象
-//  @param sheetIndex 需要读取第几个单元薄
-//  @param ptr 读取后的切片对象
-//  @return resultData 返回的切片
-//  @return err 错误信息
 //
-func readCore[T any](xlsx *excelize.File, sheetIndex int, ptr T) (resultData []T, err error) {
+//	@Description: 读取excel的核心方法
+//	@param xlsx excelize.File对象
+//	@param sheetIndex 需要读取第几个单元薄
+//	@return resultData 返回的切片
+//	@return err 错误信息
+func readCore[T any](xlsx *excelize.File, sheetIndex int) (resultData []T, err error) {
 	sheetName := xlsx.GetSheetName(sheetIndex)
 	rows, err := xlsx.GetRows(sheetName)
 	if err != nil {
 		fmt.Println("获取行数据异常:" + err.Error())
 		return nil, err
 	}
-	err = NewExcelStructDefault().SetPointerStruct(&ptr).RowsAllProcess(rows, func(maps map[string]interface{}) error {
+	var ptr = new(T)
+	err = NewExcelStructDefault().SetPointerStruct(ptr).RowsAllProcess(rows, func(maps map[string]interface{}) error {
 		// map转结构体
 		if mapErr := gstruct.Decode(maps, &ptr); mapErr != nil {
 			return mapErr
 		}
-		resultData = append(resultData, ptr)
+		resultData = append(resultData, *ptr)
 		return nil
 	})
 	if err != nil {
@@ -104,12 +104,12 @@ func readCore[T any](xlsx *excelize.File, sheetIndex int, ptr T) (resultData []T
 }
 
 // WriteToFile
-//  @Description: 将二维数组数据写入到excel的sheet
-//  @param n 单元薄的名称
-//  @param dataList 数据切片
-//  @return *excelize.File 返回的excelFile对象
-//  @return error 错误信息
 //
+//	@Description: 将二维数组数据写入到excel的sheet
+//	@param n 单元薄的名称
+//	@param dataList 数据切片
+//	@return *excelize.File 返回的excelFile对象
+//	@return error 错误信息
 func WriteToFile[T any](n string, dataList []T) (*excelize.File, error) {
 	if len(n) == 0 {
 		n = "Sheet1"

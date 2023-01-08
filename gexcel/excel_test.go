@@ -2,10 +2,11 @@ package gexcel
 
 import (
 	"fmt"
-	"github.com/lytdev/go-mykit/gstruct"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/lytdev/go-mykit/gstruct"
 
 	"github.com/xuri/excelize/v2"
 )
@@ -56,11 +57,10 @@ func TestRead(t *testing.T) {
 	}
 }
 
-//测试直接读取本地文件
+// 测试直接读取本地文件
 func TestReadLocalFile(t *testing.T) {
 	filePath := "../testdata/图书列表.xlsx"
-	var ptr ExcelTest
-	dataList, err := ReadFileToList(filePath, 0, ptr)
+	dataList, err := ReadFileToList[ExcelTest](filePath, 0)
 	if err != nil {
 		t.Error(err)
 		os.Exit(1)
@@ -71,7 +71,7 @@ func TestReadLocalFile(t *testing.T) {
 	}
 }
 
-//测试写入至本都文件
+// 测试写入至本都文件
 func TestWriteFile(t *testing.T) {
 	pubDate, err := time.ParseInLocation(DatePattern, "2021-12-01", time.Local)
 	if err != nil {
@@ -112,7 +112,7 @@ func TestWriteFile(t *testing.T) {
 		os.Exit(1)
 	}
 	// 根据指定路径保存文件
-	if err := f.SaveAs("../testdata/测试excel输出.xlsx"); err != nil {
+	if err := f.SaveAs("../testdata/图书列表.xlsx"); err != nil {
 		fmt.Println(err)
 	}
 }
