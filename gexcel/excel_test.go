@@ -33,7 +33,6 @@ func TestRead(t *testing.T) {
 	sheetName := xlsx.GetSheetName(0)
 	rows, err := xlsx.GetRows(sheetName)
 	if err != nil {
-		fmt.Println(err)
 		t.Error("获取行数据异常:", err)
 		os.Exit(1)
 	}
@@ -52,7 +51,6 @@ func TestRead(t *testing.T) {
 		os.Exit(1)
 	}
 	for _, data := range resultData {
-		fmt.Println(data)
 		t.Log(data)
 	}
 }
@@ -66,7 +64,6 @@ func TestReadLocalFile(t *testing.T) {
 		os.Exit(1)
 	}
 	for _, data := range dataList {
-		fmt.Println(data)
 		t.Log(data)
 	}
 }
@@ -108,11 +105,10 @@ func TestWriteFile(t *testing.T) {
 	sheetName := "Sheet1"
 	f, err := WriteToFile(sheetName, dataList)
 	if err != nil {
-		fmt.Println(err)
 		os.Exit(1)
 	}
 	// 根据指定路径保存文件
 	if err := f.SaveAs("../testdata/图书列表.xlsx"); err != nil {
-		fmt.Println(err)
+		t.Error(err)
 	}
 }
