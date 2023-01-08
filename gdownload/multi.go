@@ -3,7 +3,6 @@ package gdownload
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"sync"
@@ -28,7 +27,7 @@ func (d *Downloader) MultiDownload(wc *WriteCounter, url, filename string, conte
 			downloaded := 0
 			// 断点续传
 			if d.resume {
-				content, err := ioutil.ReadFile(d.getPartFilename(filename, i))
+				content, err := os.ReadFile(d.getPartFilename(filename, i))
 				if err == nil {
 					downloaded = len(content)
 					wc.Write(content)
@@ -114,7 +113,7 @@ func (d *Downloader) merge(filename string) error {
 	return nil
 }
 
-//获取分片的名称
+// 获取分片的名称
 func (d *Downloader) getPartFilename(filename string, partNum int) string {
 	return fmt.Sprintf("%s_%d", filename, partNum)
 }
