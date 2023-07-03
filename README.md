@@ -1,5 +1,8 @@
 # 说明
 
+## 安装
+go get -u github.com/lytdev/go-mykit
+
 > 打造类似`hutool`的 go 工具箱
 
 ## 工具概览
