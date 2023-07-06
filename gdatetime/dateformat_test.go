@@ -73,7 +73,7 @@ func TestFormat(t *testing.T) {
 
 	for _, key := range keys {
 		val := dataMap[key]
-		p1, err := FormatDateTimeStr(val)
+		p1, err := FormatDateTimeToStr(val)
 		if err != nil {
 			t.Logf("日期的名称:%s --> 错误信息:%s", key, err.Error())
 		} else {
