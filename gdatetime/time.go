@@ -4,7 +4,10 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
+	"regexp"
 	"time"
+
+	"github.com/lytdev/go-mykit/gconv"
 )
 
 const (
@@ -199,4 +202,33 @@ func (t *FormatTime) Scan(v interface{}) error {
 		return nil
 	}
 	return fmt.Errorf("can not convert %v to timestamp", v)
+}
+
+// FormatDurationToSecond 将持续时间转为秒数 1:01:03
+func FormatDurationToSecond(duration string) (int64, error) {
+	hms := regexp.MustCompile(`^(?P<hour>\d+):(?P<minute>\d{1,2}):(?P<second>\d{1,2})$`)
+	ms := regexp.MustCompile(`^(?P<minute>\d{1,2}):(?P<second>\d{1,2})$`)
+	s := regexp.MustCompile(`^(?P<second>\d{1,2})$`)
+	var groupNames []string
+	var matched []string
+	if matched = hms.FindStringSubmatch(duration); len(matched) > 0 {
+		groupNames = hms.SubexpNames()
+	} else if matched = ms.FindStringSubmatch(duration); len(matched) > 0 {
+		groupNames = ms.SubexpNames()
+	} else if matched = s.FindStringSubmatch(duration); len(matched) > 0 {
+		groupNames = s.SubexpNames()
+	} else {
+		return 0, errors.New("持续时间格式不正确")
+	}
+	result := make(map[string]string)
+	// 转换为map
+	for i, name := range groupNames {
+		if i != 0 && name != "" { // 第一个分组为空（也就是整个匹配）
+			result[name] = matched[i]
+		}
+	}
+	hour := result["hour"]
+	minute := result["minute"]
+	second := result["second"]
+	return gconv.ToInt64(hour)*3600 + gconv.ToInt64(minute)*60 + gconv.ToInt64(second), nil
 }
