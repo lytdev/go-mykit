@@ -14,9 +14,9 @@ func ToBoolSlice(i interface{}) []bool {
 	return v
 }
 
-// ToStringSlice 将接口数据类型转换为[]string
-func ToStringSlice(i interface{}) []string {
-	v, _ := ToStringSliceE(i)
+// ToStrSlice 将接口数据类型转换为[]string
+func ToStrSlice(i interface{}) []string {
+	v, _ := ToStrSliceE(i)
 	return v
 }
 

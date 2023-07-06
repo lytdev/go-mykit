@@ -4,14 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 )
 
-type byName []os.FileInfo
+type byName []os.DirEntry
 
 // Less 文件名倒序
 func (f byName) Less(i, j int) bool { return f[i].Name() > f[j].Name() }
@@ -90,12 +89,12 @@ func ReplaceFileStr(fp, src, target string) {
 }
 
 // ListFileName 列出目录下文件名列表
-//  @Description: 根据后缀名查找文件列表
-//  @param dirPath 目录地址
-//  @param needDir 是否需要拼接目录
-//  @param isDescend 是否按照倒序排列
-//  @return []string 文件列表
 //
+//	@Description: 根据后缀名查找文件列表
+//	@param dirPath 目录地址
+//	@param needDir 是否需要拼接目录
+//	@param isDescend 是否按照倒序排列
+//	@return []string 文件列表
 func ListFileName(dirPath string, needDir, isDescend bool) ([]string, error) {
 	files := make([]string, 0)
 	fis, err := ListFile(dirPath)
@@ -117,15 +116,15 @@ func ListFileName(dirPath string, needDir, isDescend bool) ([]string, error) {
 }
 
 // ListFile 列出目录下文件列表(不递归)
-func ListFile(dirPath string) ([]os.FileInfo, error) {
-	files := make([]os.FileInfo, 0)
+func ListFile(dirPath string) ([]os.DirEntry, error) {
+	files := make([]os.DirEntry, 0)
 	if !IsExist(dirPath) {
 		return nil, fmt.Errorf("given path does not exist: %s", dirPath)
 	} else if IsFile(dirPath) {
 		return files, nil
 	}
 
-	fis, err := ioutil.ReadDir(dirPath)
+	fis, err := os.ReadDir(dirPath)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +135,7 @@ func ListFile(dirPath string) ([]os.FileInfo, error) {
 // RecurveListDirFile 递归获取目录下所有的文件
 func RecurveListDirFile(dirname string) ([]string, error) {
 	dirname = strings.TrimSuffix(dirname, string(os.PathSeparator))
-	files, err := ioutil.ReadDir(dirname)
+	files, err := os.ReadDir(dirname)
 	if err != nil {
 		return nil, err
 	}
@@ -158,14 +157,14 @@ func RecurveListDirFile(dirname string) ([]string, error) {
 }
 
 // FileListBySuffix
-//  @Description: 根据后缀名查找文件列表
-//  @param dirPath 目录地址
-//  @param suffix 后缀名
-//  @param needDir 是否需要拼接目录
-//  @param isDescend 是否按照倒序排列
-//  @param num 获取的个数
-//  @return []string 文件列表
 //
+//	@Description: 根据后缀名查找文件列表
+//	@param dirPath 目录地址
+//	@param suffix 后缀名
+//	@param needDir 是否需要拼接目录
+//	@param isDescend 是否按照倒序排列
+//	@param num 获取的个数
+//	@return []string 文件列表
 func FileListBySuffix(dirPath, suffix string, needDir bool, isDescend bool, num int) ([]string, error) {
 	if !IsExist(dirPath) {
 		return nil, fmt.Errorf("given path does not exist: %s", dirPath)
@@ -173,7 +172,7 @@ func FileListBySuffix(dirPath, suffix string, needDir bool, isDescend bool, num 
 		return []string{dirPath}, nil
 	}
 
-	fis, err := ioutil.ReadDir(dirPath)
+	fis, err := os.ReadDir(dirPath)
 	if err != nil {
 		return nil, err
 	}
@@ -201,14 +200,14 @@ func FileListBySuffix(dirPath, suffix string, needDir bool, isDescend bool, num 
 }
 
 // FileListByPrefix
-//  @Description: 根据前缀名查找文件列表
-//  @param dirPath 目录地址
-//  @param suffix 后缀名
-//  @param needDir 是否需要拼接目录
-//  @param isDescend 是否按照倒序排列
-//  @param num 获取的个数
-//  @return []string 文件列表
 //
+//	@Description: 根据前缀名查找文件列表
+//	@param dirPath 目录地址
+//	@param suffix 后缀名
+//	@param needDir 是否需要拼接目录
+//	@param isDescend 是否按照倒序排列
+//	@param num 获取的个数
+//	@return []string 文件列表
 func FileListByPrefix(dirPath, suffix string, needDir bool, isDescend bool, num int) ([]string, error) {
 	if !IsExist(dirPath) {
 		return nil, fmt.Errorf("目录不存在错误: %s", dirPath)
@@ -216,7 +215,7 @@ func FileListByPrefix(dirPath, suffix string, needDir bool, isDescend bool, num 
 		return []string{dirPath}, nil
 	}
 
-	fis, err := ioutil.ReadDir(dirPath)
+	fis, err := os.ReadDir(dirPath)
 	if err != nil {
 		return nil, err
 	}
@@ -244,14 +243,14 @@ func FileListByPrefix(dirPath, suffix string, needDir bool, isDescend bool, num 
 }
 
 // FileListByKey
-//  @Description: 根据文件名关键字模糊查找文件列表
-//  @param dirPath 目录地址
-//  @param key 文件名关键字
-//  @param needDir 是否需要拼接目录
-//  @param isDescend 是否按照倒序排列
-//  @param num 获取的个数
-//  @return []string 文件列表
 //
+//	@Description: 根据文件名关键字模糊查找文件列表
+//	@param dirPath 目录地址
+//	@param key 文件名关键字
+//	@param needDir 是否需要拼接目录
+//	@param isDescend 是否按照倒序排列
+//	@param num 获取的个数
+//	@return []string 文件列表
 func FileListByKey(dirPath, key string, needDir bool, isDescend bool, num int) ([]string, error) {
 	if !IsExist(dirPath) {
 		return nil, fmt.Errorf("given path does not exist: %s", dirPath)
@@ -259,7 +258,7 @@ func FileListByKey(dirPath, key string, needDir bool, isDescend bool, num int) (
 		return []string{dirPath}, nil
 	}
 
-	fis, err := ioutil.ReadDir(dirPath)
+	fis, err := os.ReadDir(dirPath)
 	if err != nil {
 		return nil, err
 	}

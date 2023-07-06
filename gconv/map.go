@@ -1,6 +1,9 @@
 package gconv
 
-import "reflect"
+import (
+	"reflect"
+	"strings"
+)
 
 // ToStrMapBool 将接口数据类型转换为map[string]bool
 func ToStrMapBool(i interface{}) map[string]bool {
@@ -53,4 +56,17 @@ func StructToMap(obj interface{}) map[string]interface{} {
 		}
 	}
 	return data
+}
+
+// StructTagToMap 结构体的tag(tag的多个kay-value是使用;隔开的)转map
+func StructTagToMap(tagStr string) map[string]string {
+	resultData := make(map[string]string)
+	splitData := strings.Split(tagStr, ";")
+	for _, v := range splitData {
+		key, val, ok := strings.Cut(v, ":")
+		if ok {
+			resultData[key] = val
+		}
+	}
+	return resultData
 }

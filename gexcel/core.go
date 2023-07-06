@@ -43,7 +43,7 @@ func getStructInit(ptr interface{}) *FieldsModel {
 		if tagStr == "" {
 			fields.Title = fieldInfo.Name
 		} else {
-			tagMap := gconv.TagStrConvMap(tagStr)
+			tagMap := gconv.StructTagToMap(tagStr)
 			if title, ok := tagMap[TagCustomTitleKey]; ok {
 				fields.Title = title
 			}

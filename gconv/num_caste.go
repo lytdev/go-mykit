@@ -1000,7 +1000,7 @@ func ToStringMapStringSliceE(i interface{}) (map[string][]string, error) {
 		return v, nil
 	case map[string][]interface{}:
 		for k, val := range v {
-			m[ToString(k)] = ToStringSlice(val)
+			m[ToString(k)] = ToStrSlice(val)
 		}
 		return m, nil
 	case map[string]string:
@@ -1011,7 +1011,7 @@ func ToStringMapStringSliceE(i interface{}) (map[string][]string, error) {
 		for k, val := range v {
 			switch vt := val.(type) {
 			case []interface{}:
-				m[ToString(k)] = ToStringSlice(vt)
+				m[ToString(k)] = ToStrSlice(vt)
 			case []string:
 				m[ToString(k)] = vt
 			default:
@@ -1021,17 +1021,17 @@ func ToStringMapStringSliceE(i interface{}) (map[string][]string, error) {
 		return m, nil
 	case map[interface{}][]string:
 		for k, val := range v {
-			m[ToString(k)] = ToStringSlice(val)
+			m[ToString(k)] = ToStrSlice(val)
 		}
 		return m, nil
 	case map[interface{}]string:
 		for k, val := range v {
-			m[ToString(k)] = ToStringSlice(val)
+			m[ToString(k)] = ToStrSlice(val)
 		}
 		return m, nil
 	case map[interface{}][]interface{}:
 		for k, val := range v {
-			m[ToString(k)] = ToStringSlice(val)
+			m[ToString(k)] = ToStrSlice(val)
 		}
 		return m, nil
 	case map[interface{}]interface{}:
@@ -1040,7 +1040,7 @@ func ToStringMapStringSliceE(i interface{}) (map[string][]string, error) {
 			if err != nil {
 				return m, fmt.Errorf("unable to cast %#v of type %T to map[string][]string", i, i)
 			}
-			value, err := ToStringSliceE(val)
+			value, err := ToStrSliceE(val)
 			if err != nil {
 				return m, fmt.Errorf("unable to cast %#v of type %T to map[string][]string", i, i)
 			}
@@ -1227,8 +1227,8 @@ func ToBoolSliceE(i interface{}) ([]bool, error) {
 	}
 }
 
-// ToStringSliceE casts an interface to a []string type.
-func ToStringSliceE(i interface{}) ([]string, error) {
+// ToStrSliceE casts an interface to a []string type.
+func ToStrSliceE(i interface{}) ([]string, error) {
 	var a []string
 
 	switch v := i.(type) {
@@ -1284,6 +1284,32 @@ func ToStringSliceE(i interface{}) ([]string, error) {
 		return []string{str}, nil
 	default:
 		return a, fmt.Errorf("unable to cast %#v of type %T to []string", i, i)
+	}
+}
+
+func ToFloat64SliceE(i interface{}) ([]float64, error) {
+	if i == nil {
+		return []float64{}, fmt.Errorf("unable to cast %#v of type %T to []float64", i, i)
+	}
+	switch v := i.(type) {
+	case []float64:
+		return v, nil
+	}
+	kind := reflect.TypeOf(i).Kind()
+	switch kind {
+	case reflect.Slice, reflect.Array:
+		s := reflect.ValueOf(i)
+		a := make([]float64, s.Len())
+		for j := 0; j < s.Len(); j++ {
+			val, err := ToFloat64E(s.Index(j).Interface())
+			if err != nil {
+				return []float64{}, fmt.Errorf("unable to cast %#v of type %T to []float64", i, i)
+			}
+			a[j] = val
+		}
+		return a, nil
+	default:
+		return []float64{}, fmt.Errorf("unable to cast %#v of type %T to []float64", i, i)
 	}
 }
 

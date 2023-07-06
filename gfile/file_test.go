@@ -7,7 +7,8 @@ import (
 )
 
 func TestRecurveListDirFile(t *testing.T) {
-	files, err := RecurveListDirFile("E:\\Share\\产品研发\\科研创新服务平台\\科研创新服务平台\\files")
+	dirPath := "D:\\云展活动\\数据报告\\2022年第2季"
+	files, err := RecurveListDirFile(dirPath)
 	if err != nil {
 		t.Error(err)
 	}

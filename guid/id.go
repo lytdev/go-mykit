@@ -12,8 +12,8 @@ func Uuid2() string {
 	uuid, _ := NewV2(DomainPerson)
 	return uuid.String()
 }
-func Uuid3() string {
-	return NewV3(NamespaceDNS, "www.example.com").String()
+func Uuid3(name string) string {
+	return NewV3(NamespaceDNS, name).String()
 }
 
 func Uuid4() string {
@@ -21,8 +21,8 @@ func Uuid4() string {
 	return uuid.String()
 }
 
-func Uuid5() string {
-	uuid := NewV5(NamespaceDNS, "www.example.com")
+func Uuid5(name string) string {
+	uuid := NewV5(NamespaceDNS, name)
 	return uuid.String()
 }
 

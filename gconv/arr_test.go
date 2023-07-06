@@ -1,12 +1,15 @@
 package gconv
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
-func TestToNum(t *testing.T) {
-	var s1 = "3.1415926"
-	i1 := ToInt(s1)
-	i2 := ToInt64(s1)
-	t.Log("i1:", i1)
-	t.Log("i2:", i2)
-	t.Log("demo:", int64(ToFloat64(s1)))
+func TestToSlice(t *testing.T) {
+	var s1 = "3,2154"
+	//s1: [3.1415926,2154]
+	d1 := strings.Split(s1, ",")
+	t.Log("s1:", d1)
+	d2 := ToIntSlice(d1)
+	t.Log("d2:", d2)
 }

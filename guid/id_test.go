@@ -9,8 +9,9 @@ import (
 func TestUuid(t *testing.T) {
 	t.Log("uuid1:" + Uuid1())
 	t.Log("uuid2:" + Uuid2())
-	t.Log("uuid3:" + Uuid3())
+	t.Log("uuid3:" + Uuid3("www.example.com"))
 	t.Log("uuid4:" + Uuid4())
+	t.Log("uuid5:" + Uuid5("www.example.com"))
 	t.Log("fastUuid:" + FastUuid())
 }
 

@@ -16,6 +16,7 @@ import (
 )
 
 // https://github.com/satori/go.uuid/blob/master/uuid.go
+//https://github.com/gofrs/uuid
 
 // Difference in 100-nanosecond intervals between
 // UUID epoch (October 15, 1582) and Unix epoch (January 1, 1970).
