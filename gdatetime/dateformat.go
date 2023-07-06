@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-// GetFormatDateStr /** 提取日期为统一格式
-func GetFormatDateStr(numStr string) (string, error) {
+// FormatDateTimeStr 提取日期为统一格式 yyyy-mm-dd hh:mm:ss
+func FormatDateTimeToStr(numStr string) (string, error) {
 	if len(numStr) == 0 {
 		return "", nil
 	}
