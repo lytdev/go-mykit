@@ -15,11 +15,11 @@ go get -u github.com/lytdev/go-mykit
 
 ### datetime
 > 日期时间推荐使用[carbon](https://github.com/golang-module/carbon)
-- `gtime.FormatDateTimeToStr` 提取日期为统一格式 yyyy-mm-dd hh:mm:ss
-- `gtime.FormatDurationToSecond` 将持续时间转为秒数 1:01:03
-- `gtime.TimeToStrAsFormat` 获取时间字符串
-- `gtime.TimeToTimeStampMill` 时间转毫秒级别时间戳
-- `gtime.TimestampSecToTime` 秒级别时间戳转时间
+- `gdatetime.FormatDateTimeToStr` 提取日期为统一格式 yyyy-mm-dd hh:mm:ss
+- `gdatetime.FormatDurationToSecond` 将持续时间转为秒数 1:01:03
+- `gdatetime.TimeToStrAsFormat` 获取时间字符串
+- `gdatetime.TimeToTimeStampMill` 时间转毫秒级别时间戳
+- `gdatetime.TimestampSecToTime` 秒级别时间戳转时间
 
 ### 文件操作
 - `gfile.ReadWithLine` 按行读取文件的文本
