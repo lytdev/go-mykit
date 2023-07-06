@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"mime/multipart"
+	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
@@ -24,6 +26,16 @@ func ExtName(fp string) string {
 		return suffix[1:]
 	}
 	return suffix
+}
+
+// FileDir 获取文件所在的路径
+func FileDir(fp string) (string, error) {
+	index := strings.LastIndex(fp, string(os.PathSeparator))
+	if index == -1 {
+		return "", fmt.Errorf("file name: %s do not contain path separators", fp)
+	}
+	fileNameWithSuffix := fp[:index]
+	return strings.TrimSpace(fileNameWithSuffix), nil
 }
 
 // MainName 获取文件的名称,不带后缀
@@ -327,4 +339,43 @@ func PathJoin(pathArr ...string) string {
 		sbStr = sbStr[:len(sbStr)-1]
 	}
 	return sbStr
+}
+
+// 返回值说明：
+//	7z、exe、doc 类型会返回 application/octet-stream  未知的文件类型
+//	jpg	=>	image/jpeg
+//	png	=>	image/png
+//	ico	=>	image/x-icon
+//	bmp	=>	image/bmp
+//  xlsx、docx 、zip	=>	application/zip
+//  tar.gz	=>	application/x-gzip
+//  txt、json、log等文本文件	=>	text/plain; charset=utf-8   备注：就算txt是gbk、ansi编码，也会识别为utf-8
+
+// FileMimeType 通过文件名获取文件mime信息
+func FileMimeType(fp string) (string, error) {
+	f, err := os.Open(fp)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	// 只需要前 32 个字节就可以了
+	buffer := make([]byte, 32)
+	if _, err := f.Read(buffer); err != nil {
+
+		return "", err
+	}
+
+	return http.DetectContentType(buffer), nil
+}
+
+// MultipartFileMimeType 通过文件指针获取文件mime信息
+func MultipartFileMimeType(fp multipart.File) (string, error) {
+
+	buffer := make([]byte, 32)
+	if _, err := fp.Read(buffer); err != nil {
+		return "", err
+	}
+
+	return http.DetectContentType(buffer), nil
 }
