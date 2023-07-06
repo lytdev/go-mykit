@@ -28,7 +28,12 @@ func ExtName(fp string) string {
 
 // MainName 获取文件的名称,不带后缀
 func MainName(fp string) string {
-	return strings.TrimSuffix(fp, filepath.Ext(fp))
+	index := strings.LastIndex(fp, string(os.PathSeparator))
+	if index == -1 {
+		return strings.TrimSuffix(fp, filepath.Ext(fp))
+	}
+	fileNameWithSuffix := fp[index+1:]
+	return strings.TrimSuffix(fileNameWithSuffix, filepath.Ext(fileNameWithSuffix))
 }
 
 // IsExist 判断文件或文件夹是否存在

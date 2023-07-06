@@ -17,6 +17,12 @@ func TestRecurveListDirFile(t *testing.T) {
 	}
 }
 
+func TestFileDemo(t *testing.T) {
+	filePath := "D:\\云展活动\\数据报告\\2022年第2季\\2022年第2季.zip"
+	s1 := MainName(filePath)
+	t.Log(s1)
+
+}
 func TestPath(t *testing.T) {
 	filePath2 := path.Join("v1", "v2", "v3/v4", "v6.exe")
 	t.Log(filePath2)
