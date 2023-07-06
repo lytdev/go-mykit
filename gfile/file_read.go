@@ -36,6 +36,8 @@ func ReadWithLine(fp string) ([]string, error) {
 	}
 	return lines, nil
 }
+
+// CopyFile 复制文件
 func CopyFile(src, dst string) (int64, error) {
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
