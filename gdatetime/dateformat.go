@@ -1,4 +1,4 @@
-package gtime
+package gdatetime
 
 import (
 	"errors"
