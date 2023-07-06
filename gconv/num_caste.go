@@ -465,7 +465,7 @@ func ToIntE(i interface{}) (int, error) {
 	case float32:
 		return int(s), nil
 	case string:
-		v, err := strconv.ParseInt(trimZeroDecimal(s), 0, 0)
+		v, err := ToFloat64E(s)
 		if err == nil {
 			return int(v), nil
 		}
@@ -498,7 +498,7 @@ func ToUintE(i interface{}) (uint, error) {
 
 	switch s := i.(type) {
 	case string:
-		v, err := strconv.ParseInt(trimZeroDecimal(s), 0, 0)
+		v, err := ToFloat64E(s)
 		if err == nil {
 			if v < 0 {
 				return 0, errNegativeNotAllowed
